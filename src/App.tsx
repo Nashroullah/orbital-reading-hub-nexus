@@ -21,6 +21,13 @@ import ProfilePage from "./pages/ProfilePage";
 import FeedbackPage from "./pages/FeedbackPage";
 import SearchPage from "./pages/SearchPage";
 
+// Admin Pages
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import ManageUsersPage from "./pages/admin/ManageUsersPage";
+import ManageFinesPage from "./pages/admin/ManageFinesPage";
+import ManageBooksPage from "./pages/admin/ManageBooksPage";
+import ReportsPage from "./pages/admin/ReportsPage";
+
 // Layouts
 import Layout from "./components/layout/Layout";
 
@@ -50,6 +57,13 @@ const App = () => (
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/feedback" element={<FeedbackPage />} />
                   <Route path="/search" element={<SearchPage />} />
+                  
+                  {/* Admin routes */}
+                  <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                  <Route path="/admin/users" element={<ManageUsersPage />} />
+                  <Route path="/admin/fines" element={<ManageFinesPage />} />
+                  <Route path="/books/manage" element={<ManageBooksPage />} />
+                  <Route path="/reports" element={<ReportsPage />} />
                 </Route>
                 
                 {/* Catch-all route */}
