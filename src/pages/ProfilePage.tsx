@@ -1,15 +1,57 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { toast } from "@/components/ui/sonner";
+import { User, Camera } from 'lucide-react';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [profileImage, setProfileImage] = useState<string | null>(user?.profileImage || null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!user) return null;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setProfileImage(event.target.result as string);
+        toast.success('Profile picture updated');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, this would update the user profile
+    toast.success('Profile updated successfully');
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className="space-y-8">
@@ -26,12 +68,32 @@ const ProfilePage: React.FC = () => {
             <CardTitle>User Info</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
-            <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={user.profileImage} alt={user.name} />
-              <AvatarFallback className="text-2xl">
-                {user.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative mb-4">
+              <Avatar className="h-24 w-24">
+                {profileImage ? (
+                  <AvatarImage src={profileImage} alt={user.name} />
+                ) : (
+                  <AvatarFallback className="text-2xl bg-primary text-white">
+                    <User className="h-12 w-12" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <Button 
+                variant="secondary" 
+                size="icon" 
+                className="absolute bottom-0 right-0 rounded-full"
+                onClick={triggerFileInput}
+              >
+                <Camera className="h-4 w-4" />
+              </Button>
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleFileChange}
+              />
+            </div>
             <h3 className="text-xl font-medium mb-1">{user.name}</h3>
             <p className="text-gray-500 mb-2">{user.email}</p>
             <p className="text-sm bg-primary/10 px-3 py-1 rounded-full text-primary font-medium">
@@ -45,14 +107,15 @@ const ProfilePage: React.FC = () => {
             <CardTitle>Account Settings</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium">
                   Name
                 </label>
                 <Input
                   id="name"
-                  defaultValue={user.name}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               
@@ -63,7 +126,8 @@ const ProfilePage: React.FC = () => {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue={user.email}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               

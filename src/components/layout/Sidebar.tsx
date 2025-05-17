@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -135,9 +134,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               {isStudent && (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/ai-assistant" className={getNavLinkClass}>
-                      <MessageSquare className="h-5 w-5 mr-3" />
-                      {!isCollapsed && <span>AI Assistant</span>}
+                    <NavLink to="/feedback" className={getNavLinkClass}>
+                      <Star className="h-5 w-5 mr-3" />
+                      {!isCollapsed && <span>Rating & Feedback</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

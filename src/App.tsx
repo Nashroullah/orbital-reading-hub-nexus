@@ -18,6 +18,7 @@ import BooksPage from "./pages/BooksPage";
 import BookDetailPage from "./pages/BookDetailPage";
 import MyBooksPage from "./pages/MyBooksPage";
 import ProfilePage from "./pages/ProfilePage";
+import FeedbackPage from "./pages/FeedbackPage";
 
 // Layouts
 import Layout from "./components/layout/Layout";
@@ -46,6 +47,7 @@ const App = () => (
                   <Route path="/books/:id" element={<BookDetailPage />} />
                   <Route path="/my-books" element={<MyBooksPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/feedback" element={<FeedbackPage />} />
                 </Route>
                 
                 {/* Catch-all route */}

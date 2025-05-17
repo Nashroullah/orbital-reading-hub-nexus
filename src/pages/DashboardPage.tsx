@@ -5,6 +5,7 @@ import { useLibrary } from '@/contexts/LibraryContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookCopy, Clock, Calendar, FileMinus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -93,7 +94,7 @@ const DashboardPage: React.FC = () => {
             <FileMinus className="h-5 w-5 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalFines.toFixed(2)}</div>
+            <div className="text-2xl font-bold">Rs{totalFines.toFixed(2)}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {totalFines > 0 ? 'Payment required' : 'No outstanding fines'}
             </p>
@@ -116,7 +117,7 @@ const DashboardPage: React.FC = () => {
                 <h3 className="font-medium mb-1 line-clamp-1">{book.title}</h3>
                 <p className="text-sm text-gray-500 mb-2">{book.author}</p>
                 <Button asChild className="w-full mt-2" size="sm">
-                  <a href={`/books/${book.id}`}>View Details</a>
+                  <Link to={`/books/${book.id}`}>View Details</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -124,7 +125,7 @@ const DashboardPage: React.FC = () => {
         </div>
         <div className="flex justify-center mt-4">
           <Button variant="outline" asChild>
-            <a href="/books">Browse All Books</a>
+            <Link to="/books">Browse All Books</Link>
           </Button>
         </div>
       </div>

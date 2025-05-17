@@ -46,11 +46,21 @@ export interface UserActivity {
   userId: string;
 }
 
+export interface Feedback {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
 interface LibraryContextType {
   books: Book[];
   borrowedBooks: BorrowedBook[];
   reviews: BookReview[];
   userActivities: UserActivity[];
+  feedback: Feedback[];
   getBook: (id: string) => Book | undefined;
   borrowBook: (bookId: string) => void;
   returnBook: (borrowId: string) => void;
@@ -64,6 +74,10 @@ interface LibraryContextType {
   getPopularBooks: () => Book[];
   getBooksByGenre: (genre: string) => Book[];
   searchBooks: (query: string) => Book[];
+  addFeedback: (rating: number, comment: string) => void;
+  updateFeedback: (feedbackId: string, rating: number, comment: string) => void;
+  deleteFeedback: (feedbackId: string) => void;
+  getFeedback: () => Feedback[];
 }
 
 export const LibraryContext = createContext<LibraryContextType>({
@@ -71,6 +85,7 @@ export const LibraryContext = createContext<LibraryContextType>({
   borrowedBooks: [],
   reviews: [],
   userActivities: [],
+  feedback: [],
   getBook: () => undefined,
   borrowBook: () => {},
   returnBook: () => {},
@@ -84,6 +99,10 @@ export const LibraryContext = createContext<LibraryContextType>({
   getPopularBooks: () => [],
   getBooksByGenre: () => [],
   searchBooks: () => [],
+  addFeedback: () => {},
+  updateFeedback: () => {},
+  deleteFeedback: () => {},
+  getFeedback: () => [],
 });
 
 // Mock data - Books
@@ -177,6 +196,66 @@ const generateMockBooks = (): Book[] => [
     availableCopies: 15,
     averageRating: 4.9,
     totalRatings: 200
+  },
+  {
+    id: '7',
+    title: 'Harry Potter and the Philosopher\'s Stone',
+    author: 'J.K. Rowling',
+    coverImage: 'https://images.unsplash.com/photo-1626618012641-bfbca5a31239?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    genre: 'Fantasy',
+    description: 'The first novel in the Harry Potter series, featuring a young wizard who discovers his magical heritage.',
+    isbn: '978-0747532699',
+    publicationYear: 1997,
+    available: true,
+    totalCopies: 25,
+    availableCopies: 18,
+    averageRating: 4.8,
+    totalRatings: 220
+  },
+  {
+    id: '8',
+    title: 'The Lord of the Rings',
+    author: 'J.R.R. Tolkien',
+    coverImage: 'https://images.unsplash.com/photo-1671028452060-84a5f1e99f76?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    genre: 'Fantasy',
+    description: 'An epic high fantasy novel that follows the quest to destroy the One Ring, which was created by the Dark Lord Sauron.',
+    isbn: '978-0618640157',
+    publicationYear: 1954,
+    available: true,
+    totalCopies: 15,
+    availableCopies: 10,
+    averageRating: 4.9,
+    totalRatings: 180
+  },
+  {
+    id: '9',
+    title: 'A Brief History of Time',
+    author: 'Stephen Hawking',
+    coverImage: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    genre: 'Science',
+    description: 'A landmark volume in science writing that explores the nature of the universe and our place within it.',
+    isbn: '978-0553380163',
+    publicationYear: 1988,
+    available: true,
+    totalCopies: 8,
+    availableCopies: 6,
+    averageRating: 4.5,
+    totalRatings: 95
+  },
+  {
+    id: '10',
+    title: 'The Alchemist',
+    author: 'Paulo Coelho',
+    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    genre: 'Fiction',
+    description: 'A philosophical novel that follows the journey of a young Andalusian shepherd named Santiago in his quest for treasure.',
+    isbn: '978-0062315007',
+    publicationYear: 1988,
+    available: true,
+    totalCopies: 12,
+    availableCopies: 9,
+    averageRating: 4.7,
+    totalRatings: 150
   }
 ];
 
@@ -247,12 +326,33 @@ const generateMockUserActivities = (): UserActivity[] => [
   }
 ];
 
+// Mock feedback
+const generateMockFeedback = (): Feedback[] => [
+  {
+    id: '1',
+    userId: '2',
+    userName: 'Faculty Member',
+    rating: 4,
+    comment: 'The library services are excellent. The staff is very helpful and the collection is extensive.',
+    date: '2023-05-15T10:30:00Z'
+  },
+  {
+    id: '2',
+    userId: '3',
+    userName: 'Student User',
+    rating: 5,
+    comment: 'I love the quiet study spaces and the online reservation system is very convenient.',
+    date: '2023-06-20T14:45:00Z'
+  }
+];
+
 export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>(generateMockBooks());
   const [borrowedBooks, setBorrowedBooks] = useState<BorrowedBook[]>(generateMockBorrowedBooks());
   const [reviews, setReviews] = useState<BookReview[]>(generateMockReviews());
   const [userActivities, setUserActivities] = useState<UserActivity[]>(generateMockUserActivities());
+  const [feedback, setFeedback] = useState<Feedback[]>(generateMockFeedback());
 
   // Load data from localStorage if available
   useEffect(() => {
@@ -260,11 +360,13 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const storedBorrowedBooks = localStorage.getItem('borrowedBooks');
     const storedReviews = localStorage.getItem('reviews');
     const storedUserActivities = localStorage.getItem('userActivities');
+    const storedFeedback = localStorage.getItem('feedback');
 
     if (storedBooks) setBooks(JSON.parse(storedBooks));
     if (storedBorrowedBooks) setBorrowedBooks(JSON.parse(storedBorrowedBooks));
     if (storedReviews) setReviews(JSON.parse(storedReviews));
     if (storedUserActivities) setUserActivities(JSON.parse(storedUserActivities));
+    if (storedFeedback) setFeedback(JSON.parse(storedFeedback));
   }, []);
 
   // Save data to localStorage when it changes
@@ -273,7 +375,8 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('borrowedBooks', JSON.stringify(borrowedBooks));
     localStorage.setItem('reviews', JSON.stringify(reviews));
     localStorage.setItem('userActivities', JSON.stringify(userActivities));
-  }, [books, borrowedBooks, reviews, userActivities]);
+    localStorage.setItem('feedback', JSON.stringify(feedback));
+  }, [books, borrowedBooks, reviews, userActivities, feedback]);
 
   // Get book by ID
   const getBook = (id: string): Book | undefined => {
@@ -287,7 +390,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const due = new Date(dueDate);
       const today = new Date();
       if (today > due) {
-        // Fine is $1 per day
+        // Fine is Rs 1 per day
         const daysOverdue = Math.floor((today.getTime() - due.getTime()) / (1000 * 60 * 60 * 24));
         return daysOverdue;
       }
@@ -298,7 +401,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const returned = new Date(returnDate);
     
     if (returned > due) {
-      // Fine is $1 per day
+      // Fine is Rs 1 per day
       const daysOverdue = Math.floor((returned.getTime() - due.getTime()) / (1000 * 60 * 60 * 24));
       return daysOverdue;
     }
@@ -422,7 +525,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const book = books.find(b => b.id === borrowedBook.bookId);
     
     if (fine > 0) {
-      toast.warning(`Book returned with a fine of $${fine}. Please pay at the counter.`);
+      toast.warning(`Book returned with a fine of Rs${fine}. Please pay at the counter.`);
     } else {
       toast.success(`Thank you for returning "${book?.title}"`);
     }
@@ -563,6 +666,77 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     toast.success("Review deleted successfully");
   };
 
+  // Add feedback
+  const addFeedback = (rating: number, comment: string) => {
+    if (!user) {
+      toast.error("You need to log in to add feedback");
+      return;
+    }
+    
+    const newFeedback: Feedback = {
+      id: (feedback.length + 1).toString(),
+      userId: user.id,
+      userName: user.name,
+      rating,
+      comment,
+      date: new Date().toISOString(),
+    };
+    
+    setFeedback([...feedback, newFeedback]);
+  };
+  
+  // Update feedback
+  const updateFeedback = (feedbackId: string, rating: number, comment: string) => {
+    const existingFeedback = feedback.find(f => f.id === feedbackId);
+    
+    if (!existingFeedback) {
+      toast.error("Feedback not found");
+      return;
+    }
+    
+    if (!user || existingFeedback.userId !== user.id) {
+      toast.error("You can only edit your own feedback");
+      return;
+    }
+    
+    const updatedFeedback = feedback.map(f => {
+      if (f.id === feedbackId) {
+        return {
+          ...f,
+          rating,
+          comment,
+          date: new Date().toISOString(),
+        };
+      }
+      return f;
+    });
+    
+    setFeedback(updatedFeedback);
+  };
+  
+  // Delete feedback
+  const deleteFeedback = (feedbackId: string) => {
+    const existingFeedback = feedback.find(f => f.id === feedbackId);
+    
+    if (!existingFeedback) {
+      toast.error("Feedback not found");
+      return;
+    }
+    
+    if (!user || existingFeedback.userId !== user.id) {
+      toast.error("You can only delete your own feedback");
+      return;
+    }
+    
+    const updatedFeedback = feedback.filter(f => f.id !== feedbackId);
+    setFeedback(updatedFeedback);
+  };
+  
+  // Get all feedback
+  const getFeedback = () => {
+    return feedback;
+  };
+
   // Get user borrowed books
   const getUserBorrowedBooks = () => {
     if (!user) return [];
@@ -646,6 +820,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         borrowedBooks,
         reviews,
         userActivities,
+        feedback,
         getBook,
         borrowBook,
         returnBook,
@@ -659,6 +834,10 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         getPopularBooks,
         getBooksByGenre,
         searchBooks,
+        addFeedback,
+        updateFeedback,
+        deleteFeedback,
+        getFeedback,
       }}
     >
       {children}
