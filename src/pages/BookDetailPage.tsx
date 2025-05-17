@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Star, BookCopy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,8 +36,49 @@ const BookDetailPage: React.FC = () => {
     borrowBook(id);
   };
 
+  // Helper function to get a professional cover based on the book title/author/genre
+  const getBookCoverByMetadata = (book) => {
+    // Mapping genres to appropriate cover styles
+    if (book.title.toLowerCase().includes('javascript') || 
+        book.genre.toLowerCase().includes('programming')) {
+      return "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title.toLowerCase().includes('design') ||
+              book.genre.toLowerCase().includes('design')) {
+      return "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('science fiction') ||
+              book.title.toLowerCase().includes('future')) {
+      return "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('business')) {
+      return "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('philosophy') ||
+              book.title.toLowerCase().includes('think')) {
+      return "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('romance')) {
+      return "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('mystery')) {
+      return "https://images.unsplash.com/photo-1587876931567-564ce588bfbd?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('fantasy')) {
+      return "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title.toLowerCase().includes('data') ||
+              book.genre.toLowerCase().includes('technology')) {
+      return "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('history')) {
+      return "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('adventure')) {
+      return "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre.toLowerCase().includes('self-help')) {
+      return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title.toLowerCase().includes('art') ||
+              book.genre.toLowerCase().includes('art')) {
+      return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else {
+      // Default cover for other genres
+      return "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto px-4">
       <Link to="/books" className="flex items-center text-primary hover:underline mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Books
@@ -45,11 +87,13 @@ const BookDetailPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Book Cover */}
         <div className="md:col-span-1">
-          <img 
-            src={book.coverImage} 
-            alt={`Cover of ${book.title}`} 
-            className="rounded-lg shadow-lg w-full h-auto object-cover mb-6"
-          />
+          <AspectRatio ratio={2/3} className="rounded-lg overflow-hidden shadow-lg mb-6">
+            <img 
+              src={getBookCoverByMetadata(book)} 
+              alt={`Cover of ${book.title}`} 
+              className="w-full h-full object-cover"
+            />
+          </AspectRatio>
           <Button 
             className="w-full mb-2" 
             onClick={handleBorrow}
@@ -70,7 +114,7 @@ const BookDetailPage: React.FC = () => {
           <h1 className="text-3xl font-serif font-bold mb-2">{book.title}</h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">by {book.author}</p>
           
-          <div className="flex items-center mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <Badge variant="outline" className="mr-2">{book.genre}</Badge>
             <div className="flex items-center">
               <div className="flex items-center">
