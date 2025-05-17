@@ -19,6 +19,7 @@ import BookDetailPage from "./pages/BookDetailPage";
 import MyBooksPage from "./pages/MyBooksPage";
 import ProfilePage from "./pages/ProfilePage";
 import FeedbackPage from "./pages/FeedbackPage";
+import SearchPage from "./pages/SearchPage";
 
 // Layouts
 import Layout from "./components/layout/Layout";
@@ -48,6 +49,7 @@ const App = () => (
                   <Route path="/my-books" element={<MyBooksPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/feedback" element={<FeedbackPage />} />
+                  <Route path="/search" element={<SearchPage />} />
                 </Route>
                 
                 {/* Catch-all route */}

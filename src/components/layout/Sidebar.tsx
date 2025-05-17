@@ -28,7 +28,6 @@ import {
   Clock,
   MessageSquare,
   Star,
-  Search
 } from "lucide-react";
 
 interface SidebarProps {
@@ -118,15 +117,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <NavLink to="/profile" className={getNavLinkClass}>
                     <User className="h-5 w-5 mr-3" />
                     {!isCollapsed && <span>Profile</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink to="/search" className={getNavLinkClass}>
-                    <Search className="h-5 w-5 mr-3" />
-                    {!isCollapsed && <span>Search</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

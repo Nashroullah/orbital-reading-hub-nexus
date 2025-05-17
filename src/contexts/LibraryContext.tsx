@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { toast } from "@/components/ui/sonner";
@@ -231,7 +230,7 @@ const generateMockBooks = (): Book[] => [
     id: '9',
     title: 'A Brief History of Time',
     author: 'Stephen Hawking',
-    coverImage: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjaWVuY2UlMjBjb3NtaWN8ZW58MHx8MHx8fDA%3D',
     genre: 'Science',
     description: 'A landmark volume in science writing that explores the nature of the universe and our place within it.',
     isbn: '978-0553380163',
@@ -246,7 +245,7 @@ const generateMockBooks = (): Book[] => [
     id: '10',
     title: 'The Alchemist',
     author: 'Paulo Coelho',
-    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1613336026275-d6d473084e85?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVzZXJ0JTIwam91cm5leXxlbnwwfHwwfHx8MA%3D%3D',
     genre: 'Fiction',
     description: 'A philosophical novel that follows the journey of a young Andalusian shepherd named Santiago in his quest for treasure.',
     isbn: '978-0062315007',
@@ -256,6 +255,96 @@ const generateMockBooks = (): Book[] => [
     availableCopies: 9,
     averageRating: 4.7,
     totalRatings: 150
+  },
+  {
+    id: '11',
+    title: 'Sapiens: A Brief History of Humankind',
+    author: 'Yuval Noah Harari',
+    coverImage: 'https://images.unsplash.com/photo-1545465270-b28c72e73088?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aHVtYW5pdHl8ZW58MHx8MHx8fDA%3D',
+    genre: 'History',
+    description: 'A book that explores the history and impact of Homo sapiens across the planet, from ancient times to the present.',
+    isbn: '978-0062316097',
+    publicationYear: 2011,
+    available: true,
+    totalCopies: 15,
+    availableCopies: 11,
+    averageRating: 4.6,
+    totalRatings: 185
+  },
+  {
+    id: '12',
+    title: 'The Silent Patient',
+    author: 'Alex Michaelides',
+    coverImage: 'https://images.unsplash.com/photo-1604154864724-1c9f9bee3b20?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNpbGVudCUyMHdvbWFufGVufDB8fDB8fHww',
+    genre: 'Thriller',
+    description: 'A psychological thriller about a woman who shoots her husband and then stops speaking, and the therapist determined to treat her.',
+    isbn: '978-1250301697',
+    publicationYear: 2019,
+    available: true,
+    totalCopies: 10,
+    availableCopies: 8,
+    averageRating: 4.5,
+    totalRatings: 110
+  },
+  {
+    id: '13',
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    coverImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2R1Y3Rpdml0eXxlbnwwfHwwfHx8MA%3D',
+    genre: 'Self-Help',
+    description: 'A guide about how tiny changes can lead to remarkable results in forming good habits and breaking bad ones.',
+    isbn: '978-0735211292',
+    publicationYear: 2018,
+    available: true,
+    totalCopies: 18,
+    availableCopies: 14,
+    averageRating: 4.8,
+    totalRatings: 200
+  },
+  {
+    id: '14',
+    title: 'Educated',
+    author: 'Tara Westover',
+    coverImage: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bW91bnRhaW4lMjBmYW1pbHl8ZW58MHx8MHx8fDA%3D',
+    genre: 'Memoir',
+    description: 'A memoir about a young girl who leaves her survivalist family and goes on to earn a PhD from Cambridge University.',
+    isbn: '978-0399590504',
+    publicationYear: 2018,
+    available: true,
+    totalCopies: 12,
+    availableCopies: 9,
+    averageRating: 4.7,
+    totalRatings: 170
+  },
+  {
+    id: '15',
+    title: 'The Midnight Library',
+    author: 'Matt Haig',
+    coverImage: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGlicmFyeXxlbnwwfHwwfHx8MA%3D',
+    genre: 'Fiction',
+    description: 'A novel about a library beyond the edge of the universe that contains books with alternate versions of your life.',
+    isbn: '978-0525559474',
+    publicationYear: 2020,
+    available: true,
+    totalCopies: 15,
+    availableCopies: 12,
+    averageRating: 4.5,
+    totalRatings: 145
+  },
+  {
+    id: '16',
+    title: 'Dune',
+    author: 'Frank Herbert',
+    coverImage: 'https://images.unsplash.com/photo-1682687982501-1e58ab814714?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxzZWFyY2h8MXx8ZGVzZXJ0fGVufDB8fDB8fHww',
+    genre: 'Science Fiction',
+    description: 'A science fiction novel set in the distant future amidst a feudal interstellar society where noble houses control individual planets.',
+    isbn: '978-0441172719',
+    publicationYear: 1965,
+    available: true,
+    totalCopies: 20,
+    availableCopies: 16,
+    averageRating: 4.7,
+    totalRatings: 210
   }
 ];
 

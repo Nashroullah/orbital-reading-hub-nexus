@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { BookOpen, User, Search } from 'lucide-react';
+import { BookOpen, User, MessageSquare } from 'lucide-react';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -75,12 +75,12 @@ const Index = () => {
             
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-center flex flex-col items-center">
               <div className="bg-primary/10 p-4 rounded-full mb-4">
-                <Search className="h-8 w-8 text-primary" />
+                <MessageSquare className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-medium mb-3">AI Book Assistant</h3>
+              <h3 className="text-xl font-medium mb-3">Help & Support</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Get personalized book recommendations and answers to your 
-                library-related questions with our advanced AI assistant.
+                Get assistance with your library-related questions and support
+                for all your reading needs from our dedicated team.
               </p>
             </div>
           </div>
