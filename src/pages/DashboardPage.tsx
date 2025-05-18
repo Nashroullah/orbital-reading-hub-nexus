@@ -120,20 +120,23 @@ const DashboardPage: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card as={Link} to="/activity" className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Reading Time
-            </CardTitle>
-            <Clock className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formattedTime}</div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              View detailed activity →
-            </p>
-          </CardContent>
-        </Card>
+        <div className="relative group">
+          <Link to="/activity" className="absolute inset-0 z-10 cursor-pointer" aria-label="View activity details"></Link>
+          <Card className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Total Reading Time
+              </CardTitle>
+              <Clock className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formattedTime}</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                View detailed activity →
+              </p>
+            </CardContent>
+          </Card>
+        </div>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
