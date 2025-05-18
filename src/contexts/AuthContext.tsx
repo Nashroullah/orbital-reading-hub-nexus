@@ -19,6 +19,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
+  // Add admin functions
+  getAllUsers: () => User[];
+  updateUserRole: (userId: string, newRole: UserRole) => void;
 }
 
 // Create the Auth Context
@@ -28,6 +31,9 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   register: async () => {},
   logout: () => {},
+  // Add admin functions
+  getAllUsers: () => [],
+  updateUserRole: () => {},
 });
 
 // Mock users for demo purposes
@@ -59,6 +65,7 @@ const mockUsers: User[] = [
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [users, setUsers] = useState<User[]>(mockUsers);
 
   // Check for existing session on load
   useEffect(() => {
@@ -72,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login function
   const login = async (email: string, password: string) => {
     // For demo purposes - normally would call an API
-    const foundUser = mockUsers.find(u => u.email === email);
+    const foundUser = users.find(u => u.email === email);
     
     if (foundUser && password === 'password') {
       setUser(foundUser);
@@ -88,14 +95,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Register function
   const register = async (name: string, email: string, password: string, role: UserRole) => {
     // Check if email already exists
-    if (mockUsers.some(u => u.email === email)) {
+    if (users.some(u => u.email === email)) {
       toast.error("Email already registered");
       throw new Error('Email already registered');
     }
 
     // Create new user (in a real app, this would include password hashing & DB storage)
     const newUser: User = {
-      id: (mockUsers.length + 1).toString(),
+      id: (users.length + 1).toString(),
       name,
       email,
       role,
@@ -103,7 +110,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     // Add to mock users and log in
-    mockUsers.push(newUser);
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    
     setUser(newUser);
     setIsAuthenticated(true);
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -118,8 +127,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.info("You've been logged out");
   };
 
+  // Admin functions
+  const getAllUsers = () => {
+    // In a real app, this would be an API call that checks user permissions
+    if (user?.role !== 'admin') {
+      toast.error("You don't have permission to view all users");
+      return [];
+    }
+    return users;
+  };
+
+  const updateUserRole = (userId: string, newRole: UserRole) => {
+    // In a real app, this would be an API call that checks user permissions
+    if (user?.role !== 'admin') {
+      toast.error("You don't have permission to update user roles");
+      return;
+    }
+
+    const updatedUsers = users.map(u => {
+      if (u.id === userId) {
+        return { ...u, role: newRole };
+      }
+      return u;
+    });
+    
+    setUsers(updatedUsers);
+    
+    // If the current user's role is being changed, update it
+    if (user?.id === userId) {
+      const updatedUser = { ...user, role: newRole };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated, 
+      login, 
+      register, 
+      logout,
+      getAllUsers,
+      updateUserRole
+    }}>
       {children}
     </AuthContext.Provider>
   );

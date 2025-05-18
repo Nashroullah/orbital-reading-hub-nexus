@@ -10,7 +10,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const { getPopularBooks, getUserBorrowedBooks, getFineAmount } = useLibrary();
+  const { getPopularBooks, getUserBorrowedBooks, getFineAmount, getUserActivities } = useLibrary();
 
   if (!user) {
     return null; // Should be handled by the Layout component
@@ -25,6 +25,13 @@ const DashboardPage: React.FC = () => {
   const totalFines = borrowedBooks.reduce((sum, book) => {
     return sum + getFineAmount(book.id);
   }, 0);
+
+  // Get user's reading time
+  const userActivities = getUserActivities();
+  const totalMinutes = userActivities.reduce((total, activity) => total + activity.timeSpent, 0);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const formattedTime = `${hours}h ${minutes}m`;
 
   // Helper function to get a professional cover based on the book title/author/genre
   const getBookCoverByMetadata = (book) => {
@@ -121,9 +128,9 @@ const DashboardPage: React.FC = () => {
             <Clock className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3h 30m</div>
+            <div className="text-2xl font-bold">{formattedTime}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              This month
+              Reading time tracked
             </p>
           </CardContent>
         </Card>
@@ -136,7 +143,7 @@ const DashboardPage: React.FC = () => {
             <FileMinus className="h-5 w-5 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rs{totalFines.toFixed(2)}</div>
+            <div className="text-2xl font-bold">₹{totalFines.toFixed(2)}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {totalFines > 0 ? 'Payment required' : 'No outstanding fines'}
             </p>
@@ -152,7 +159,7 @@ const DashboardPage: React.FC = () => {
             <Card key={book.id} className="overflow-hidden flex flex-col h-full">
               <AspectRatio ratio={2/3} className="bg-muted">
                 <img 
-                  src={getBookCoverByMetadata(book)} 
+                  src={book.coverImage || getBookCoverByMetadata(book)} 
                   alt={book.title} 
                   className="w-full h-full object-cover transition-transform hover:scale-105"
                 />

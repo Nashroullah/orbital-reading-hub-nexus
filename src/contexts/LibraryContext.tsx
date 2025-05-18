@@ -77,6 +77,11 @@ interface LibraryContextType {
   updateFeedback: (feedbackId: string, rating: number, comment: string) => void;
   deleteFeedback: (feedbackId: string) => void;
   getFeedback: () => Feedback[];
+  // New methods for admin functionality
+  addBook: (book: Partial<Book>) => void;
+  updateBook: (bookId: string, updatedBook: Partial<Book>) => void;
+  deleteBook: (bookId: string) => void;
+  clearFine: (borrowId: string) => void;
 }
 
 export const LibraryContext = createContext<LibraryContextType>({
@@ -102,6 +107,11 @@ export const LibraryContext = createContext<LibraryContextType>({
   updateFeedback: () => {},
   deleteFeedback: () => {},
   getFeedback: () => [],
+  // New methods for admin functionality
+  addBook: () => {},
+  updateBook: () => {},
+  deleteBook: () => {},
+  clearFine: () => {},
 });
 
 // Mock data - Books
@@ -127,7 +137,7 @@ const generateMockBooks = (): Book[] => [
     author: 'George Orwell',
     coverImage: 'https://images.unsplash.com/photo-1571824170220-1f6de438f73d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
     genre: 'Science Fiction',
-    description: 'A dystopian social science fiction novel that examines the consequences of totalitarianism, mass surveillance, and repressive regimentation of persons and behaviors.',
+    description: 'A chilling vision of a dystopian future that remains relevant today. Required reading for understanding modern surveillance.',
     isbn: '978-0451524935',
     publicationYear: 1949,
     available: true,
@@ -834,7 +844,13 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Get user activities
   const getUserActivities = () => {
-    if (!user) return [];
+    if (!user) {
+      // For admin users, return all activities
+      if (user && user.role === 'admin') {
+        return userActivities;
+      }
+      return [];
+    }
     return userActivities.filter(a => a.userId === user.id);
   };
 
@@ -902,6 +918,112 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
+  // New methods for admin functionality
+  // Add a new book
+  const addBook = (bookData: Partial<Book>) => {
+    if (!user || (user.role !== 'admin' && user.role !== 'faculty')) {
+      toast.error("You don't have permission to add books");
+      return;
+    }
+
+    if (!bookData.title || !bookData.author) {
+      toast.error("Title and author are required");
+      return;
+    }
+
+    // Generate a random cover based on the genre
+    let coverImage = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    
+    if (bookData.genre) {
+      if (bookData.genre.toLowerCase().includes('fiction')) {
+        coverImage = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+      } else if (bookData.genre.toLowerCase().includes('science fiction')) {
+        coverImage = "https://images.unsplash.com/photo-1571824170220-1f6de438f73d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+      } else if (bookData.genre.toLowerCase().includes('romance')) {
+        coverImage = "https://images.unsplash.com/photo-1603162617002-f880f561cee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+      } else if (bookData.genre.toLowerCase().includes('fantasy')) {
+        coverImage = "https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+      } else if (bookData.genre.toLowerCase().includes('history')) {
+        coverImage = "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+      }
+    }
+
+    const newBook: Book = {
+      id: (books.length + 1).toString(),
+      title: bookData.title,
+      author: bookData.author,
+      coverImage: bookData.coverImage || coverImage,
+      genre: bookData.genre || "Uncategorized",
+      description: bookData.description || "",
+      isbn: bookData.isbn || `ISBN-${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+      publicationYear: bookData.publicationYear || new Date().getFullYear(),
+      available: true,
+      totalCopies: bookData.totalCopies || 1,
+      availableCopies: bookData.availableCopies || bookData.totalCopies || 1,
+      averageRating: 0,
+      totalRatings: 0,
+    };
+
+    setBooks([...books, newBook]);
+  };
+
+  // Update an existing book
+  const updateBook = (bookId: string, updatedBookData: Partial<Book>) => {
+    if (!user || (user.role !== 'admin' && user.role !== 'faculty')) {
+      toast.error("You don't have permission to update books");
+      return;
+    }
+
+    const bookIndex = books.findIndex(b => b.id === bookId);
+    
+    if (bookIndex === -1) {
+      toast.error("Book not found");
+      return;
+    }
+
+    const updatedBooks = [...books];
+    updatedBooks[bookIndex] = { ...updatedBooks[bookIndex], ...updatedBookData };
+    setBooks(updatedBooks);
+  };
+
+  // Delete a book
+  const deleteBook = (bookId: string) => {
+    if (!user || (user.role !== 'admin' && user.role !== 'faculty')) {
+      toast.error("You don't have permission to delete books");
+      return;
+    }
+
+    // Check if book is currently borrowed
+    const bookBorrowed = borrowedBooks.some(b => b.bookId === bookId && b.returnDate === null);
+    
+    if (bookBorrowed) {
+      toast.error("Can't delete a book that is currently borrowed");
+      return;
+    }
+
+    setBooks(books.filter(b => b.id !== bookId));
+    // Remove all related reviews and borrow history
+    setReviews(reviews.filter(r => r.bookId !== bookId));
+    setBorrowedBooks(borrowedBooks.filter(b => b.bookId !== bookId));
+  };
+
+  // Clear a fine
+  const clearFine = (borrowId: string) => {
+    if (!user || user.role !== 'admin') {
+      toast.error("You don't have permission to clear fines");
+      return;
+    }
+
+    const updatedBorrowedBooks = borrowedBooks.map(b => {
+      if (b.id === borrowId) {
+        return { ...b, fine: 0 };
+      }
+      return b;
+    });
+    
+    setBorrowedBooks(updatedBorrowedBooks);
+  };
+
   return (
     <LibraryContext.Provider
       value={{
@@ -927,6 +1049,11 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateFeedback,
         deleteFeedback,
         getFeedback,
+        // New methods
+        addBook,
+        updateBook,
+        deleteBook,
+        clearFine,
       }}
     >
       {children}
