@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,20 @@ const ProfilePage: React.FC = () => {
   const [email, setEmail] = useState(user?.email || '');
   const [profileImage, setProfileImage] = useState<string | null>(user?.profileImage || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Store user data in localStorage when it changes
+  useEffect(() => {
+    if (user && profileImage !== user.profileImage) {
+      // In a real app, this would update the user profile on the server
+      // For now, we'll just update it in localStorage
+      const updatedUser = {
+        ...user,
+        profileImage
+      };
+      
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  }, [profileImage, user]);
 
   if (!user) return null;
 
@@ -45,8 +59,20 @@ const ProfilePage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     // In a real app, this would update the user profile
-    toast.success('Profile updated successfully');
+    // For this demo, we'll update localStorage
+    if (user) {
+      const updatedUser = {
+        ...user,
+        name,
+        email,
+        profileImage
+      };
+      
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast.success('Profile updated successfully');
+    }
   };
 
   const triggerFileInput = () => {
@@ -65,7 +91,7 @@ const ProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>User Info</CardTitle>
+            <CardTitle className="text-xl font-semibold">User Info</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
             <div className="relative mb-4">
@@ -104,7 +130,7 @@ const ProfilePage: React.FC = () => {
         
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
+            <CardTitle className="text-xl font-semibold">Account Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,6 +142,7 @@ const ProfilePage: React.FC = () => {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  className="font-medium"
                 />
               </div>
               
@@ -128,10 +155,11 @@ const ProfilePage: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="font-medium"
                 />
               </div>
               
-              <Button type="submit">Update Profile</Button>
+              <Button type="submit" className="mt-2">Update Profile</Button>
             </form>
           </CardContent>
         </Card>

@@ -120,7 +120,7 @@ const DashboardPage: React.FC = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card as={Link} to="/activity" className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
               Total Reading Time
@@ -130,7 +130,7 @@ const DashboardPage: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold">{formattedTime}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Reading time tracked
+              View detailed activity →
             </p>
           </CardContent>
         </Card>
