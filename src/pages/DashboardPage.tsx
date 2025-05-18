@@ -4,9 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLibrary } from '@/contexts/LibraryContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookCopy, Clock, Calendar, FileMinus } from 'lucide-react';
+import { BookCopy, Clock, Calendar, FileMinus, BookOpen, User, Star, Settings, FileText, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -17,6 +19,7 @@ const DashboardPage: React.FC = () => {
   }
 
   const isAdmin = user.role === 'admin';
+  const isFaculty = user.role === 'faculty' || isAdmin;
   const books = getPopularBooks();
   const borrowedBooks = getUserBorrowedBooks();
   const currentlyBorrowed = borrowedBooks.filter(b => !b.returnDate);
@@ -86,6 +89,99 @@ const DashboardPage: React.FC = () => {
             day: 'numeric' 
           })}
         </p>
+      </div>
+      
+      {/* Quick Navigation Menu */}
+      <div className="mb-6">
+        <h2 className="text-xl font-serif font-semibold mb-3">Quick Access</h2>
+        <NavigationMenu>
+          <NavigationMenuList className="flex flex-wrap gap-2">
+            <NavigationMenuItem>
+              <Link to="/my-books" className={navigationMenuTriggerStyle()}>
+                <BookCopy className="h-4 w-4 mr-2" />
+                My Books
+              </Link>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <Link to="/profile" className={navigationMenuTriggerStyle()}>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Link>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <Link to="/activity" className={navigationMenuTriggerStyle()}>
+                <Clock className="h-4 w-4 mr-2" />
+                Reading Activity
+              </Link>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <Link to="/feedback" className={navigationMenuTriggerStyle()}>
+                <Star className="h-4 w-4 mr-2" />
+                Ratings & Feedback
+              </Link>
+            </NavigationMenuItem>
+            
+            {isFaculty && (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Management
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {isAdmin && (
+                      <>
+                        <li className="row-span-1">
+                          <NavigationMenuLink asChild>
+                            <Link to="/admin/dashboard" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <div className="text-sm font-medium leading-none">Admin Dashboard</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">View library statistics and system overview.</p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                        <li className="row-span-1">
+                          <NavigationMenuLink asChild>
+                            <Link to="/admin/users" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <div className="text-sm font-medium leading-none">Manage Users</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">Add, update or remove user accounts.</p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                        <li className="row-span-1">
+                          <NavigationMenuLink asChild>
+                            <Link to="/admin/fines" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <div className="text-sm font-medium leading-none">Manage Fines</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">Review and process outstanding fines.</p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      </>
+                    )}
+                    <li className="row-span-1">
+                      <NavigationMenuLink asChild>
+                        <Link to="/books/manage" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">Manage Books</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">Add, update or remove books from the library.</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li className="row-span-1">
+                      <NavigationMenuLink asChild>
+                        <Link to="/reports" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">Reports</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">Generate and view library reports.</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
       
       {/* Stats Cards */}
