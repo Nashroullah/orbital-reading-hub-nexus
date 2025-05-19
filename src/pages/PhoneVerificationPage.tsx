@@ -18,11 +18,14 @@ const PhoneVerificationPage: React.FC = () => {
   const { verifyOTP, loginWithPhone, registerWithPhone } = useAuth();
   const [otp, setOtp] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const phone = queryParams.get('phone') || '';
   const isRegistration = queryParams.get('isRegistration') === 'true';
+  const name = queryParams.get('name') || '';
+  const role = queryParams.get('role') || 'student';
 
   useEffect(() => {
     if (!phone) {
@@ -30,6 +33,16 @@ const PhoneVerificationPage: React.FC = () => {
       navigate('/login');
     }
   }, [phone, navigate]);
+
+  // Cooldown timer for resend button
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => {
+        setResendCooldown(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,15 +76,11 @@ const PhoneVerificationPage: React.FC = () => {
     try {
       setIsLoading(true);
       if (isRegistration) {
-        // Mock name for demo purposes, in a real app you would store this in the URL or state
-        const name = "New User";
-        // Mock role for demo purposes, in a real app you would store this in the URL or state
-        const role = "student";
-        await registerWithPhone(name, phone, role);
+        await registerWithPhone(name, phone, role as any);
       } else {
         await loginWithPhone(phone);
       }
-      toast.success('A new verification code has been sent');
+      setResendCooldown(60); // 60 seconds cooldown
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message);
@@ -123,9 +132,9 @@ const PhoneVerificationPage: React.FC = () => {
                     type="button" 
                     onClick={handleResendOTP} 
                     className="text-elegant-purple font-medium cursor-pointer hover:underline ml-1"
-                    disabled={isLoading}
+                    disabled={isLoading || resendCooldown > 0}
                   >
-                    Resend
+                    {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend'}
                   </button>
                 </p>
               </div>

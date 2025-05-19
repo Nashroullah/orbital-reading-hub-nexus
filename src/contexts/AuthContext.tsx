@@ -1,6 +1,6 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define User types and roles
 export type UserRole = 'admin' | 'faculty' | 'student';
@@ -18,10 +18,10 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  loginWithPhone: (phone: string) => Promise<string>; // New phone login method
-  verifyOTP: (phone: string, otp: string) => Promise<void>; // New OTP verification
+  loginWithPhone: (phone: string) => Promise<void>; // Modified to return void
+  verifyOTP: (phone: string, otp: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
-  registerWithPhone: (name: string, phone: string, role: UserRole) => Promise<string>; // New phone registration
+  registerWithPhone: (name: string, phone: string, role: UserRole) => Promise<void>; // Modified to return void
   logout: () => void;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
@@ -35,10 +35,10 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   login: async () => {},
-  loginWithPhone: async () => "",
+  loginWithPhone: async () => {},
   verifyOTP: async () => {},
   register: async () => {},
-  registerWithPhone: async () => "",
+  registerWithPhone: async () => {},
   logout: () => {},
   requestPasswordReset: async () => {},
   resetPassword: async () => {},
@@ -80,7 +80,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [pendingVerifications, setPendingVerifications] = useState<Record<string, {name?: string, role?: UserRole, otp: string}>>({});
+  const [pendingVerifications, setPendingVerifications] = useState<Record<string, {name?: string, role?: UserRole}>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   // Check for existing session on load
   useEffect(() => {
@@ -91,13 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Generate a 6-digit OTP
-  const generateOTP = (): string => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  };
-
   // Login with phone function
-  const loginWithPhone = async (phone: string): Promise<string> => {
+  const loginWithPhone = async (phone: string): Promise<void> => {
     // Check if phone exists
     const foundUser = users.find(u => u.phone === phone);
     
@@ -106,95 +102,136 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Phone number not registered');
     }
     
-    // Generate OTP
-    const otp = generateOTP();
-    
-    // Store the OTP for verification (in a real app, this would be sent via SMS)
-    setPendingVerifications(prev => ({
-      ...prev,
-      [phone]: { otp }
-    }));
-    
-    console.log(`OTP for ${phone}: ${otp}`); // For demo purposes
-    toast.info(`For demo purposes, your OTP is: ${otp}`);
-    
-    return otp;
+    try {
+      setIsLoading(true);
+      
+      // Call the send-otp function to send SMS
+      const { error } = await supabase.functions.invoke('send-otp', {
+        body: { phone },
+      });
+      
+      if (error) {
+        toast.error("Failed to send verification code");
+        throw new Error('Failed to send verification code');
+      }
+      
+      toast.success("Verification code sent to your phone");
+      
+    } catch (err) {
+      console.error("Error sending OTP:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to send verification code");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Verify OTP function
   const verifyOTP = async (phone: string, otp: string): Promise<void> => {
-    const verification = pendingVerifications[phone];
-    
-    if (!verification) {
-      toast.error("No verification pending for this phone number");
-      throw new Error('No verification pending for this phone number');
-    }
-    
-    if (verification.otp !== otp) {
-      toast.error("Invalid OTP");
-      throw new Error('Invalid OTP');
-    }
-    
-    // If we have a name and role, this is a registration flow
-    if (verification.name && verification.role) {
-      // Create new user
-      const newUser: User = {
-        id: (users.length + 1).toString(),
-        name: verification.name,
-        email: `${phone.replace(/[^0-9]/g, '')}@phone.reading-orbital.com`, // Generate an email from phone
-        role: verification.role,
-        profileImage: '/placeholder.svg',
-        phone
-      };
+    try {
+      setIsLoading(true);
       
-      // Add to mock users
-      const updatedUsers = [...users, newUser];
-      setUsers(updatedUsers);
+      // Check if this is a registration flow
+      const isRegistration = !!pendingVerifications[phone];
       
-      setUser(newUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      toast.success("Registration successful!");
-    } else {
-      // This is a login flow
-      const foundUser = users.find(u => u.phone === phone);
-      if (foundUser) {
-        setUser(foundUser);
-        setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(foundUser));
-        toast.success(`Welcome back, ${foundUser.name}!`);
+      // Call the verify-otp function to verify the code
+      const { data, error } = await supabase.functions.invoke('verify-otp', {
+        body: { phone, otp },
+      });
+      
+      if (error || !data?.valid) {
+        toast.error("Invalid or expired verification code");
+        throw new Error('Invalid or expired verification code');
       }
+      
+      // If we have pending verification data, this is a registration flow
+      if (isRegistration) {
+        const { name, role } = pendingVerifications[phone];
+        
+        if (!name || !role) {
+          throw new Error('Registration data is missing');
+        }
+        
+        // Create new user
+        const newUser: User = {
+          id: (users.length + 1).toString(),
+          name,
+          email: `${phone.replace(/[^0-9]/g, '')}@phone.reading-orbital.com`, // Generate an email from phone
+          role,
+          profileImage: '/placeholder.svg',
+          phone
+        };
+        
+        // Add to mock users
+        const updatedUsers = [...users, newUser];
+        setUsers(updatedUsers);
+        
+        setUser(newUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(newUser));
+        toast.success("Registration successful!");
+        
+        // Clear the pending verification
+        setPendingVerifications(prev => {
+          const newVerifications = { ...prev };
+          delete newVerifications[phone];
+          return newVerifications;
+        });
+      } else {
+        // This is a login flow
+        const foundUser = users.find(u => u.phone === phone);
+        if (foundUser) {
+          setUser(foundUser);
+          setIsAuthenticated(true);
+          localStorage.setItem('user', JSON.stringify(foundUser));
+          toast.success(`Welcome back, ${foundUser.name}!`);
+        }
+      }
+    } catch (err) {
+      console.error("Error verifying OTP:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to verify code");
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
-    
-    // Clear the verification
-    setPendingVerifications(prev => {
-      const newVerifications = { ...prev };
-      delete newVerifications[phone];
-      return newVerifications;
-    });
   };
 
   // Register with phone function
-  const registerWithPhone = async (name: string, phone: string, role: UserRole): Promise<string> => {
+  const registerWithPhone = async (name: string, phone: string, role: UserRole): Promise<void> => {
     // Check if phone already exists
     if (users.some(u => u.phone === phone)) {
       toast.error("Phone number already registered");
       throw new Error('Phone number already registered');
     }
     
-    // Generate OTP
-    const otp = generateOTP();
-    
-    // Store the registration data and OTP for verification
-    setPendingVerifications(prev => ({
-      ...prev,
-      [phone]: { name, role, otp }
-    }));
-    
-    console.log(`OTP for registration ${phone}: ${otp}`); // For demo purposes
-    toast.info(`For demo purposes, your registration OTP is: ${otp}`);
-    
-    return otp;
+    try {
+      setIsLoading(true);
+      
+      // Call the send-otp function to send SMS
+      const { error } = await supabase.functions.invoke('send-otp', {
+        body: { phone },
+      });
+      
+      if (error) {
+        toast.error("Failed to send verification code");
+        throw new Error('Failed to send verification code');
+      }
+      
+      // Store the registration data for verification
+      setPendingVerifications(prev => ({
+        ...prev,
+        [phone]: { name, role }
+      }));
+      
+      toast.success("Verification code sent to your phone");
+      
+    } catch (err) {
+      console.error("Error sending OTP:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to send verification code");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Login function

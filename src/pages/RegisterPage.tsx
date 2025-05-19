@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
@@ -88,7 +87,7 @@ const RegisterPage: React.FC = () => {
 
     try {
       await registerWithPhone(phoneName, phone, role);
-      navigate(`/verify?phone=${encodeURIComponent(phone)}&isRegistration=true`);
+      navigate(`/verify?phone=${encodeURIComponent(phone)}&isRegistration=true&name=${encodeURIComponent(phoneName)}&role=${role}`);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
