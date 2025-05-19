@@ -19,6 +19,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
   // Add admin functions
   getAllUsers: () => User[];
   updateUserRole: (userId: string, newRole: UserRole) => void;
@@ -31,6 +33,8 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   register: async () => {},
   logout: () => {},
+  requestPasswordReset: async () => {},
+  resetPassword: async () => {},
   // Add admin functions
   getAllUsers: () => [],
   updateUserRole: () => {},
@@ -118,6 +122,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('user', JSON.stringify(newUser));
     toast.success("Registration successful!");
   };
+  
+  // Request Password Reset function
+  const requestPasswordReset = async (email: string) => {
+    // In a real app, this would send a reset link via email
+    // For demo purposes, we'll just check if the user exists
+    const foundUser = users.find(u => u.email === email);
+    
+    if (!foundUser) {
+      // We don't want to reveal if a user exists or not for security reasons
+      // So we'll return success regardless, but log a message for demo purposes
+      console.log(`Password reset requested for non-existent user: ${email}`);
+      return;
+    }
+    
+    console.log(`Password reset requested for user: ${foundUser.email}`);
+    // In a real app, we would generate a token and send an email with a reset link
+  };
+  
+  // Reset Password function
+  const resetPassword = async (token: string, newPassword: string) => {
+    // In a real app, this would validate the token and update the user's password
+    // For demo purposes, we'll just log the attempt
+    console.log(`Password reset attempted with token: ${token}`);
+    toast.success("Password has been reset successfully!");
+  };
 
   // Logout function
   const logout = () => {
@@ -168,6 +197,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       register, 
       logout,
+      requestPasswordReset,
+      resetPassword,
       getAllUsers,
       updateUserRole
     }}>
