@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { Twilio } from "https://esm.sh/twilio@4.11.0";
+import twilio from "https://esm.sh/twilio@4.11.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,7 +41,7 @@ serve(async (req) => {
     }
 
     // Initialize Twilio client
-    const client = new Twilio(accountSid, authToken);
+    const client = twilio(accountSid, authToken);
     
     // Send SMS with OTP
     const message = await client.messages.create({
