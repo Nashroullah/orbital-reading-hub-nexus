@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/input-otp"
 
 const PhoneVerificationPage: React.FC = () => {
-  const { verifyOTP } = useAuth();
+  const { verifyOTP, loginWithPhone, registerWithPhone } = useAuth();
   const [otp, setOtp] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -59,6 +59,30 @@ const PhoneVerificationPage: React.FC = () => {
     setOtp(value);
   };
 
+  const handleResendOTP = async () => {
+    try {
+      setIsLoading(true);
+      if (isRegistration) {
+        // Mock name for demo purposes, in a real app you would store this in the URL or state
+        const name = "New User";
+        // Mock role for demo purposes, in a real app you would store this in the URL or state
+        const role = "student";
+        await registerWithPhone(name, phone, role);
+      } else {
+        await loginWithPhone(phone);
+      }
+      toast.success('A new verification code has been sent');
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error('An unexpected error occurred while resending the code');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-elegant-cream">
       <div className="w-full max-w-md">
@@ -93,7 +117,17 @@ const PhoneVerificationPage: React.FC = () => {
               </div>
               
               <div className="text-sm text-center text-muted-foreground font-montserrat">
-                <p>Didn't receive the code? <span className="text-elegant-purple font-medium cursor-pointer hover:underline">Resend</span></p>
+                <p>
+                  Didn't receive the code? 
+                  <button 
+                    type="button" 
+                    onClick={handleResendOTP} 
+                    className="text-elegant-purple font-medium cursor-pointer hover:underline ml-1"
+                    disabled={isLoading}
+                  >
+                    Resend
+                  </button>
+                </p>
               </div>
             </CardContent>
             
