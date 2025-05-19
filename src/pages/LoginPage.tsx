@@ -1,33 +1,61 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Mail, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const LoginPage: React.FC = () => {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, loginWithPhone } = useAuth();
+  const navigate = useNavigate();
+  
+  // Email login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // Phone login state
+  const [phone, setPhone] = useState('');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loginMethod, setLoginMethod] = useState('email');
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
       await login(email, password);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await loginWithPhone(phone);
+      navigate(`/verify?phone=${encodeURIComponent(phone)}`);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -57,67 +85,136 @@ const LoginPage: React.FC = () => {
               <CardTitle className="font-playfair text-elegant-darkpurple">Log in</CardTitle>
               <CardDescription className="font-montserrat">Enter your credentials to access your account</CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="font-montserrat">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="font-montserrat"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="font-montserrat">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-elegant-purple hover:underline font-montserrat">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <Input 
-                    id="password" 
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="font-montserrat"
-                    required
-                  />
-                </div>
-                {error && (
-                  <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-montserrat">
-                    {error}
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full bg-elegant-purple hover:bg-elegant-darkpurple font-montserrat"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Logging in...' : 'Log in'}
-                </Button>
-                <div className="text-sm text-center text-muted-foreground font-montserrat">
-                  <span>Don't have an account? </span>
-                  <Link to="/register" className="text-elegant-purple font-medium hover:underline">
-                    Sign up
-                  </Link>
-                </div>
-                <div className="text-xs text-center text-muted-foreground font-montserrat">
-                  For demo purposes, use:
-                  <br />
-                  <code>admin@reading-orbital.com</code> / <code>password</code> (Admin)
-                  <br />
-                  <code>faculty@reading-orbital.com</code> / <code>password</code> (Faculty)
-                  <br />
-                  <code>student@reading-orbital.com</code> / <code>password</code> (Student)
-                </div>
-              </CardFooter>
-            </form>
+            
+            <Tabs defaultValue="email" onValueChange={setLoginMethod}>
+              <div className="px-6 mb-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="email" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    <span>Phone</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="email">
+                <form onSubmit={handleEmailSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="font-montserrat">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="your@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="font-montserrat"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password" className="font-montserrat">Password</Label>
+                        <Link to="/forgot-password" className="text-sm text-elegant-purple hover:underline font-montserrat">
+                          Forgot password?
+                        </Link>
+                      </div>
+                      <Input 
+                        id="password" 
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="font-montserrat"
+                        required
+                      />
+                    </div>
+                    {error && (
+                      <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-montserrat">
+                        {error}
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-elegant-purple hover:bg-elegant-darkpurple font-montserrat"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Logging in...' : 'Log in'}
+                    </Button>
+                    <div className="text-sm text-center text-muted-foreground font-montserrat">
+                      <span>Don't have an account? </span>
+                      <Link to="/register" className="text-elegant-purple font-medium hover:underline">
+                        Sign up
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="phone">
+                <form onSubmit={handlePhoneSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="font-montserrat">Phone Number</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        placeholder="+1234567890"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="font-montserrat"
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground font-montserrat">
+                        Include country code (e.g., +1 for US)
+                      </p>
+                    </div>
+                    {error && (
+                      <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-montserrat">
+                        {error}
+                      </div>
+                    )}
+                    <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm font-montserrat">
+                      <p>A 6-digit verification code will be sent to this phone number.</p>
+                      <p className="mt-1 text-xs">For demo purposes, the code will be displayed on screen.</p>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-elegant-purple hover:bg-elegant-darkpurple font-montserrat"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Sending code...' : 'Send Verification Code'}
+                    </Button>
+                    <div className="text-sm text-center text-muted-foreground font-montserrat">
+                      <span>Don't have an account? </span>
+                      <Link to="/register" className="text-elegant-purple font-medium hover:underline">
+                        Sign up
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </TabsContent>
+            </Tabs>
+            
+            <div className="px-6 pb-6">
+              <div className="text-xs text-center text-muted-foreground font-montserrat">
+                For demo purposes, use:
+                <br />
+                <code>admin@reading-orbital.com</code> / <code>password</code> (Admin)
+                <br />
+                <code>faculty@reading-orbital.com</code> / <code>password</code> (Faculty)
+                <br />
+                <code>student@reading-orbital.com</code> / <code>password</code> (Student)
+                <br />
+                <code>+1234567890</code> (Admin with phone)
+              </div>
+            </div>
           </Card>
         </div>
       </div>

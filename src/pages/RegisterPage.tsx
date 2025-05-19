@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,23 +14,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Phone, Mail } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const RegisterPage: React.FC = () => {
-  const { isAuthenticated, register } = useAuth();
+  const { isAuthenticated, register, registerWithPhone } = useAuth();
+  const navigate = useNavigate();
+  
+  // Email registration state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Phone registration state
+  const [phoneName, setPhoneName] = useState('');
+  const [phone, setPhone] = useState('');
+  
+  // Common state
   const [role, setRole] = useState<UserRole>('student');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [registerMethod, setRegisterMethod] = useState('email');
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -48,6 +59,36 @@ const RegisterPage: React.FC = () => {
 
     try {
       await register(name, email, password, role);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!phone) {
+      setError('Phone number is required');
+      return;
+    }
+
+    if (!phoneName) {
+      setError('Name is required');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await registerWithPhone(phoneName, phone, role);
+      navigate(`/verify?phone=${encodeURIComponent(phone)}&isRegistration=true`);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -91,85 +132,172 @@ const RegisterPage: React.FC = () => {
               <CardTitle>Register</CardTitle>
               <CardDescription>Create your account to access the library</CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input 
-                    id="name" 
-                    placeholder="John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Select
-                    value={role}
-                    onValueChange={(value) => setRole(value as UserRole)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="faculty">Faculty</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input 
-                    id="password" 
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input 
-                    id="confirmPassword" 
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                {error && (
-                  <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm">
-                    {error}
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex flex-col space-y-4">
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Create Account'}
-                </Button>
-                <div className="text-sm text-center text-muted-foreground">
-                  <span>Already have an account? </span>
-                  <Link to="/login" className="text-primary font-medium hover:underline">
-                    Log in
-                  </Link>
-                </div>
-              </CardFooter>
-            </form>
+            
+            <Tabs defaultValue="email" onValueChange={setRegisterMethod}>
+              <div className="px-6 mb-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="email" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    <span>Phone</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="email">
+                <form onSubmit={handleEmailSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input 
+                        id="name" 
+                        placeholder="John Doe"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="your@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Role</Label>
+                      <Select
+                        value={role}
+                        onValueChange={(value) => setRole(value as UserRole)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="student">Student</SelectItem>
+                            <SelectItem value="faculty">Faculty</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input 
+                        id="password" 
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Input 
+                        id="confirmPassword" 
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    {error && (
+                      <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm">
+                        {error}
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? 'Creating account...' : 'Create Account'}
+                    </Button>
+                    <div className="text-sm text-center text-muted-foreground">
+                      <span>Already have an account? </span>
+                      <Link to="/login" className="text-primary font-medium hover:underline">
+                        Log in
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="phone">
+                <form onSubmit={handlePhoneSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneName">Full Name</Label>
+                      <Input 
+                        id="phoneName" 
+                        placeholder="John Doe"
+                        value={phoneName}
+                        onChange={(e) => setPhoneName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        placeholder="+1234567890"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Include country code (e.g., +1 for US)
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneRole">Role</Label>
+                      <Select
+                        value={role}
+                        onValueChange={(value) => setRole(value as UserRole)}
+                      >
+                        <SelectTrigger id="phoneRole">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="student">Student</SelectItem>
+                            <SelectItem value="faculty">Faculty</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {error && (
+                      <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm">
+                        {error}
+                      </div>
+                    )}
+                    <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm">
+                      <p>A 6-digit verification code will be sent to this phone number.</p>
+                      <p className="mt-1 text-xs">For demo purposes, the code will be displayed on screen.</p>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? 'Sending code...' : 'Send Verification Code'}
+                    </Button>
+                    <div className="text-sm text-center text-muted-foreground">
+                      <span>Already have an account? </span>
+                      <Link to="/login" className="text-primary font-medium hover:underline">
+                        Log in
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </TabsContent>
+            </Tabs>
           </Card>
         </div>
       </div>

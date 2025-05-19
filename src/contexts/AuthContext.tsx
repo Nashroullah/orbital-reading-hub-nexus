@@ -11,13 +11,17 @@ export interface User {
   email: string;
   role: UserRole;
   profileImage?: string;
+  phone?: string; // Added phone field
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithPhone: (phone: string) => Promise<string>; // New phone login method
+  verifyOTP: (phone: string, otp: string) => Promise<void>; // New OTP verification
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  registerWithPhone: (name: string, phone: string, role: UserRole) => Promise<string>; // New phone registration
   logout: () => void;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
@@ -31,7 +35,10 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   login: async () => {},
+  loginWithPhone: async () => "",
+  verifyOTP: async () => {},
   register: async () => {},
+  registerWithPhone: async () => "",
   logout: () => {},
   requestPasswordReset: async () => {},
   resetPassword: async () => {},
@@ -47,21 +54,24 @@ const mockUsers: User[] = [
     name: 'Admin User', 
     email: 'admin@reading-orbital.com', 
     role: 'admin',
-    profileImage: '/placeholder.svg' 
+    profileImage: '/placeholder.svg',
+    phone: '+1234567890'
   },
   { 
     id: '2', 
     name: 'Faculty Member', 
     email: 'faculty@reading-orbital.com', 
     role: 'faculty',
-    profileImage: '/placeholder.svg' 
+    profileImage: '/placeholder.svg',
+    phone: '+1987654321'
   },
   { 
     id: '3', 
     name: 'Student User', 
     email: 'student@reading-orbital.com', 
     role: 'student',
-    profileImage: '/placeholder.svg' 
+    profileImage: '/placeholder.svg',
+    phone: '+1555123456'
   },
 ];
 
@@ -70,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [users, setUsers] = useState<User[]>(mockUsers);
+  const [pendingVerifications, setPendingVerifications] = useState<Record<string, {name?: string, role?: UserRole, otp: string}>>({});
 
   // Check for existing session on load
   useEffect(() => {
@@ -79,6 +90,112 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(true);
     }
   }, []);
+
+  // Generate a 6-digit OTP
+  const generateOTP = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  // Login with phone function
+  const loginWithPhone = async (phone: string): Promise<string> => {
+    // Check if phone exists
+    const foundUser = users.find(u => u.phone === phone);
+    
+    if (!foundUser) {
+      toast.error("Phone number not registered");
+      throw new Error('Phone number not registered');
+    }
+    
+    // Generate OTP
+    const otp = generateOTP();
+    
+    // Store the OTP for verification (in a real app, this would be sent via SMS)
+    setPendingVerifications(prev => ({
+      ...prev,
+      [phone]: { otp }
+    }));
+    
+    console.log(`OTP for ${phone}: ${otp}`); // For demo purposes
+    toast.info(`For demo purposes, your OTP is: ${otp}`);
+    
+    return otp;
+  };
+
+  // Verify OTP function
+  const verifyOTP = async (phone: string, otp: string): Promise<void> => {
+    const verification = pendingVerifications[phone];
+    
+    if (!verification) {
+      toast.error("No verification pending for this phone number");
+      throw new Error('No verification pending for this phone number');
+    }
+    
+    if (verification.otp !== otp) {
+      toast.error("Invalid OTP");
+      throw new Error('Invalid OTP');
+    }
+    
+    // If we have a name and role, this is a registration flow
+    if (verification.name && verification.role) {
+      // Create new user
+      const newUser: User = {
+        id: (users.length + 1).toString(),
+        name: verification.name,
+        email: `${phone.replace(/[^0-9]/g, '')}@phone.reading-orbital.com`, // Generate an email from phone
+        role: verification.role,
+        profileImage: '/placeholder.svg',
+        phone
+      };
+      
+      // Add to mock users
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      
+      setUser(newUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      toast.success("Registration successful!");
+    } else {
+      // This is a login flow
+      const foundUser = users.find(u => u.phone === phone);
+      if (foundUser) {
+        setUser(foundUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(foundUser));
+        toast.success(`Welcome back, ${foundUser.name}!`);
+      }
+    }
+    
+    // Clear the verification
+    setPendingVerifications(prev => {
+      const newVerifications = { ...prev };
+      delete newVerifications[phone];
+      return newVerifications;
+    });
+  };
+
+  // Register with phone function
+  const registerWithPhone = async (name: string, phone: string, role: UserRole): Promise<string> => {
+    // Check if phone already exists
+    if (users.some(u => u.phone === phone)) {
+      toast.error("Phone number already registered");
+      throw new Error('Phone number already registered');
+    }
+    
+    // Generate OTP
+    const otp = generateOTP();
+    
+    // Store the registration data and OTP for verification
+    setPendingVerifications(prev => ({
+      ...prev,
+      [phone]: { name, role, otp }
+    }));
+    
+    console.log(`OTP for registration ${phone}: ${otp}`); // For demo purposes
+    toast.info(`For demo purposes, your registration OTP is: ${otp}`);
+    
+    return otp;
+  };
 
   // Login function
   const login = async (email: string, password: string) => {
@@ -195,7 +312,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user, 
       isAuthenticated, 
       login, 
+      loginWithPhone,
+      verifyOTP,
       register, 
+      registerWithPhone,
       logout,
       requestPasswordReset,
       resetPassword,

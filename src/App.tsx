@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import PhoneVerificationPage from "./pages/PhoneVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import BooksPage from "./pages/BooksPage";
 import BookDetailPage from "./pages/BookDetailPage";
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/verify" element={<PhoneVerificationPage />} />
                 
                 {/* Protected routes */}
                 <Route element={<Layout requireAuth={true} />}>
