@@ -4,10 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, MessageSquare, PhoneCall } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Link } from 'react-router-dom';
-
+import { Input } from '@/components/ui/input';
 import {
   InputOTP,
   InputOTPGroup,
@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/input-otp"
 
 const PhoneVerificationPage: React.FC = () => {
-  const { verifyOTP, loginWithPhone, registerWithPhone } = useAuth();
+  const { verifyOTP, loginWithPhone, registerWithPhone, requestVoiceOTP } = useAuth();
   const [otp, setOtp] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [useManualInput, setUseManualInput] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -72,13 +73,27 @@ const PhoneVerificationPage: React.FC = () => {
     setOtp(value);
   };
 
-  const handleResendOTP = async () => {
+  const handleManualInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow digits and limit to 6 characters
+    if (/^\d*$/.test(value) && value.length <= 6) {
+      setOtp(value);
+    }
+  };
+
+  const handleResendOTP = async (viaCall = false) => {
     try {
       setIsLoading(true);
-      if (isRegistration) {
-        await registerWithPhone(name, phone, role as any);
+      if (viaCall) {
+        await requestVoiceOTP(phone);
+        toast.success("You will receive a call shortly with your verification code");
       } else {
-        await loginWithPhone(phone);
+        if (isRegistration) {
+          await registerWithPhone(name, phone, role as any);
+        } else {
+          await loginWithPhone(phone);
+        }
+        toast.success("Verification code resent to your phone");
       }
       setResendCooldown(60); // 60 seconds cooldown
     } catch (err) {
@@ -90,6 +105,10 @@ const PhoneVerificationPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleInputMethod = () => {
+    setUseManualInput(!useManualInput);
   };
 
   return (
@@ -110,33 +129,69 @@ const PhoneVerificationPage: React.FC = () => {
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
-              <div className="flex justify-center">
-                <InputOTP 
-                  maxLength={6} 
-                  value={otp} 
-                  onChange={handleOtpChange}
-                  render={({ slots }) => (
-                    <InputOTPGroup>
-                      {slots.map((slot, index) => (
-                        <InputOTPSlot key={index} {...slot} index={index} />
-                      ))}
-                    </InputOTPGroup>
-                  )}
-                />
+              {useManualInput ? (
+                <div className="flex justify-center">
+                  <Input
+                    type="text"
+                    value={otp}
+                    onChange={handleManualInputChange}
+                    placeholder="Enter 6-digit code"
+                    className="text-center text-lg font-medium tracking-widest max-w-[200px]"
+                    autoComplete="one-time-code"
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center">
+                  <InputOTP 
+                    maxLength={6} 
+                    value={otp} 
+                    onChange={handleOtpChange}
+                    render={({ slots }) => (
+                      <InputOTPGroup>
+                        {slots.map((slot, index) => (
+                          <InputOTPSlot key={index} {...slot} index={index} />
+                        ))}
+                      </InputOTPGroup>
+                    )}
+                  />
+                </div>
+              )}
+              
+              <div className="text-sm text-center">
+                <button
+                  type="button"
+                  onClick={toggleInputMethod}
+                  className="text-elegant-purple font-medium hover:underline"
+                >
+                  {useManualInput ? "Use digit-by-digit input" : "Enter code manually"}
+                </button>
               </div>
               
-              <div className="text-sm text-center text-muted-foreground font-montserrat">
+              <div className="text-sm text-center text-muted-foreground font-montserrat space-y-2">
                 <p>
                   Didn't receive the code? 
+                </p>
+                <div className="flex justify-center space-x-2">
                   <button 
                     type="button" 
-                    onClick={handleResendOTP} 
-                    className="text-elegant-purple font-medium cursor-pointer hover:underline ml-1"
+                    onClick={() => handleResendOTP(false)} 
+                    className="flex items-center text-elegant-purple font-medium cursor-pointer hover:underline px-3 py-1 rounded-md border border-elegant-purple/20"
                     disabled={isLoading || resendCooldown > 0}
                   >
-                    {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend'}
+                    <MessageSquare className="h-4 w-4 mr-1" />
+                    {resendCooldown > 0 ? `Resend SMS (${resendCooldown}s)` : 'Resend SMS'}
                   </button>
-                </p>
+                  
+                  <button 
+                    type="button" 
+                    onClick={() => handleResendOTP(true)} 
+                    className="flex items-center text-elegant-purple font-medium cursor-pointer hover:underline px-3 py-1 rounded-md border border-elegant-purple/20"
+                    disabled={isLoading || resendCooldown > 0}
+                  >
+                    <PhoneCall className="h-4 w-4 mr-1" />
+                    {resendCooldown > 0 ? `Call me (${resendCooldown}s)` : 'Call me'}
+                  </button>
+                </div>
               </div>
             </CardContent>
             
@@ -144,7 +199,7 @@ const PhoneVerificationPage: React.FC = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-elegant-purple hover:bg-elegant-darkpurple font-montserrat"
-                disabled={isLoading}
+                disabled={isLoading || otp.length !== 6}
               >
                 {isLoading ? 'Verifying...' : 'Verify'}
               </Button>

@@ -14,6 +14,7 @@ export const AuthContext = createContext<AuthContextType>({
   verifyOTP: async () => {},
   register: async () => {},
   registerWithPhone: async () => {},
+  requestVoiceOTP: async () => {},
   logout: () => {},
   requestPasswordReset: async () => {},
   resetPassword: async () => {},
@@ -49,6 +50,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await authService.sendPhoneVerification(phone, users, false);
     } catch (err) {
       console.error("Error sending OTP:", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Request voice call OTP
+  const requestVoiceOTP = async (phone: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      
+      // Check if this is a registration flow
+      const isRegistration = !!pendingVerifications[phone];
+      await authService.requestVoiceOTP(phone, users, isRegistration);
+    } catch (err) {
+      console.error("Error requesting voice OTP:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -171,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       verifyOTP,
       register, 
       registerWithPhone,
+      requestVoiceOTP,
       logout,
       requestPasswordReset,
       resetPassword,

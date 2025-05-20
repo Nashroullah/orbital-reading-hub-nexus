@@ -21,6 +21,7 @@ export interface AuthContextType {
   verifyOTP: (phone: string, otp: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   registerWithPhone: (name: string, phone: string, role: UserRole) => Promise<void>;
+  requestVoiceOTP: (phone: string) => Promise<void>;
   logout: () => void;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;

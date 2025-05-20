@@ -14,11 +14,18 @@ serve(async (req) => {
   }
 
   try {
-    const { phone } = await req.json();
+    const { phone, channel = 'sms' } = await req.json();
     
     if (!phone) {
       return new Response(
         JSON.stringify({ error: "Phone number is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (channel !== 'sms' && channel !== 'call') {
+      return new Response(
+        JSON.stringify({ error: "Channel must be 'sms' or 'call'" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -68,41 +75,68 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "Verification code sent", 
+          message: `Verification code would be sent via ${channel}`, 
           // Only include OTP in development mode
-          development_otp: otp
+          development_otp: otp,
+          channel: channel
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     // Using fetch directly instead of the Twilio SDK to avoid prototype issues
-    const twilioEndpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-    
-    const twilioParams = new URLSearchParams();
-    twilioParams.append('To', phone);
-    twilioParams.append('From', twilioPhone);
-    twilioParams.append('Body', `Your Reading Orbital verification code is: ${otp}`);
-    
+    const twilioEndpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/`;
     const auth = btoa(`${accountSid}:${authToken}`);
+    let twilioResponse;
     
-    const twilioResponse = await fetch(twilioEndpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: twilioParams,
-    });
+    if (channel === 'sms') {
+      // Send SMS
+      const twilioParams = new URLSearchParams();
+      twilioParams.append('To', phone);
+      twilioParams.append('From', twilioPhone);
+      twilioParams.append('Body', `Your Reading Orbital verification code is: ${otp}`);
+      
+      twilioResponse = await fetch(`${twilioEndpoint}Messages.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: twilioParams,
+      });
+    } else {
+      // Make voice call
+      // For Twilio Voice using TwiML
+      const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+      <Response>
+        <Say>Your Reading Orbital verification code is: ${otp.split('').join(', ')}. I repeat, ${otp.split('').join(', ')}.</Say>
+        <Pause length="1"/>
+        <Say>Your code is ${otp.split('').join(', ')}. Goodbye.</Say>
+      </Response>`;
+      
+      const twilioParams = new URLSearchParams();
+      twilioParams.append('To', phone);
+      twilioParams.append('From', twilioPhone);
+      twilioParams.append('Twiml', twiml);
+      
+      twilioResponse = await fetch(`${twilioEndpoint}Calls.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: twilioParams,
+      });
+    }
     
     const twilioData = await twilioResponse.json();
     
     if (!twilioResponse.ok) {
       console.error("Twilio API error:", twilioData);
-      throw new Error("Failed to send SMS via Twilio");
+      throw new Error(`Failed to send ${channel === 'sms' ? 'SMS' : 'voice call'} via Twilio`);
     }
     
-    console.log(`SMS sent with SID: ${twilioData.sid}`);
+    console.log(`${channel === 'sms' ? 'SMS' : 'Voice call'} initiated with SID: ${twilioData.sid}`);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -133,7 +167,12 @@ serve(async (req) => {
     
     // Return success response
     return new Response(
-      JSON.stringify({ success: true, message: "Verification code sent" }),
+      JSON.stringify({ 
+        success: true, 
+        message: channel === 'sms' 
+          ? "Verification code sent to your phone" 
+          : "You will receive a call shortly with your verification code" 
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
     

@@ -79,11 +79,12 @@ export const sendPhoneVerification = async (phone: string, users: User[], isRegi
   }
   
   // Call the send-otp function to send SMS
-  const { error } = await supabase.functions.invoke('send-otp', {
-    body: { phone },
+  const { data, error } = await supabase.functions.invoke('send-otp', {
+    body: { phone, channel: 'sms' },
   });
   
-  if (error) {
+  if (error || data?.error) {
+    console.error("Error sending OTP:", error || data?.error);
     toast.error("Failed to send verification code");
     throw new Error('Failed to send verification code');
   }
@@ -93,6 +94,37 @@ export const sendPhoneVerification = async (phone: string, users: User[], isRegi
   return { name, role }; // Return data for pending verification if registration
 };
 
+export const requestVoiceOTP = async (phone: string, users: User[], isRegistration: boolean) => {
+  if (isRegistration) {
+    // Check if phone already exists
+    if (users.some(u => u.phone === phone)) {
+      toast.error("Phone number already registered");
+      throw new Error('Phone number already registered');
+    }
+  } else {
+    // Check if phone exists for login
+    const foundUser = users.find(u => u.phone === phone);
+    
+    if (!foundUser) {
+      toast.error("Phone number not registered");
+      throw new Error('Phone number not registered');
+    }
+  }
+  
+  // Call the send-otp function to request a voice call
+  const { data, error } = await supabase.functions.invoke('send-otp', {
+    body: { phone, channel: 'call' },
+  });
+  
+  if (error || data?.error) {
+    console.error("Error requesting voice OTP:", error || data?.error);
+    toast.error("Failed to initiate verification call");
+    throw new Error('Failed to initiate verification call');
+  }
+  
+  toast.success("You will receive a call shortly with your verification code");
+};
+
 export const verifyPhoneOTP = async (phone: string, otp: string, users: User[], pendingVerification?: {name?: string, role?: UserRole}) => {
   // Call the verify-otp function to verify the code
   const { data, error } = await supabase.functions.invoke('verify-otp', {
@@ -100,6 +132,7 @@ export const verifyPhoneOTP = async (phone: string, otp: string, users: User[], 
   });
   
   if (error || !data?.valid) {
+    console.error("Error verifying OTP:", error || "Invalid code");
     toast.error("Invalid or expired verification code");
     throw new Error('Invalid or expired verification code');
   }
