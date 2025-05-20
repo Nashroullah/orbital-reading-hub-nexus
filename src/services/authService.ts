@@ -31,12 +31,7 @@ export const registerWithEmail = async (
     throw new Error('Email already registered');
   }
 
-  // Check if requesting admin role and if an admin already exists
-  if (role === 'admin' && users.some(u => u.role === 'admin')) {
-    toast.error("An admin account already exists");
-    throw new Error('Admin account already exists');
-  }
-
+  // Since we've removed all users, the first admin account will always be valid
   // Create new user
   const newUser: User = {
     id: (users.length + 1).toString(),
@@ -61,12 +56,6 @@ export const sendPhoneVerification = async (phone: string, users: User[], isRegi
     if (users.some(u => u.phone === phone)) {
       toast.error("Phone number already registered");
       throw new Error('Phone number already registered');
-    }
-
-    // Check if requesting admin role and if an admin already exists
-    if (role === 'admin' && users.some(u => u.role === 'admin')) {
-      toast.error("An admin account already exists");
-      throw new Error('Admin account already exists');
     }
   } else {
     // Check if phone exists for login
@@ -139,12 +128,6 @@ export const verifyPhoneOTP = async (phone: string, otp: string, users: User[], 
   
   // If we have pending verification data, this is a registration flow
   if (pendingVerification?.name && pendingVerification?.role) {
-    // Check if requesting admin role and if an admin already exists
-    if (pendingVerification.role === 'admin' && users.some(u => u.role === 'admin')) {
-      toast.error("An admin account already exists");
-      throw new Error('Admin account already exists');
-    }
-    
     // Create new user
     const newUser: User = {
       id: (users.length + 1).toString(),
