@@ -182,8 +182,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Re-export UserRole from types file
-export { UserRole } from '@/types/auth';
+// Re-export UserRole from types file - Fixed to use 'export type'
+export type { UserRole } from '@/types/auth';
 
 // Custom hook for easy access to auth context
 export const useAuth = () => useContext(AuthContext);
