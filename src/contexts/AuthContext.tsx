@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext } from 'react';
 import { toast } from "@/components/ui/sonner";
-import { User, UserRole, AuthContextType } from '@/types/auth';
+import { User, UserRole, AuthContextType, PendingVerification } from '@/types/auth';
 import { useAuthState } from '@/hooks/useAuthState';
 import * as authService from '@/services/authService';
 
@@ -72,11 +72,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Clear the pending verification if it was a registration
       if (isRegistration) {
-        setPendingVerifications(prev => {
-          const newVerifications = { ...prev };
-          delete newVerifications[phone];
-          return newVerifications;
-        });
+        const newVerifications = { ...pendingVerifications };
+        delete newVerifications[phone];
+        setPendingVerifications(newVerifications);
       }
     } catch (err) {
       console.error("Error verifying OTP:", err);
@@ -109,10 +107,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const pendingData = await authService.sendPhoneVerification(phone, users, true, name, role);
       
       // Store the registration data for verification
-      setPendingVerifications(prev => ({
-        ...prev,
+      const newVerifications = { 
+        ...pendingVerifications,
         [phone]: { name: pendingData.name, role: pendingData.role }
-      }));
+      };
+      setPendingVerifications(newVerifications);
       
     } catch (err) {
       console.error("Error sending OTP:", err);
@@ -182,6 +181,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+
+// Re-export UserRole from types file
+export { UserRole } from '@/types/auth';
 
 // Custom hook for easy access to auth context
 export const useAuth = () => useContext(AuthContext);

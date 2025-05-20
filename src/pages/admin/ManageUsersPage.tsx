@@ -6,7 +6,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
-import { UserRole } from "@/contexts/AuthContext";
+import { UserRole } from "@/types/auth";
 
 const ManageUsersPage: React.FC = () => {
   const { user, getAllUsers, updateUserRole } = useAuth();
