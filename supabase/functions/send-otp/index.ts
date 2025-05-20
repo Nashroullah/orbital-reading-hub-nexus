@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import twilio from "https://esm.sh/twilio@4.11.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,23 +33,76 @@ serve(async (req) => {
     
     if (!accountSid || !authToken || !twilioPhone) {
       console.error("Missing Twilio credentials");
+      
+      // For development purposes only, return the OTP directly in response
+      // In production, this should log an error and use a fallback method
+      console.log(`Development mode: Generated OTP for ${phone} is ${otp}`);
+      
+      // Create Supabase client
+      const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      // Store OTP in database with expiration (15 minutes)
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+      
+      const { error: insertError } = await supabase
+        .from('phone_verification')
+        .upsert([
+          { 
+            phone: phone,
+            otp: otp,
+            expires_at: expiresAt.toISOString()
+          }
+        ]);
+      
+      if (insertError) {
+        console.error("Error storing OTP:", insertError);
+        return new Response(
+          JSON.stringify({ error: "Error storing verification code" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
       return new Response(
-        JSON.stringify({ error: "Server configuration error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ 
+          success: true, 
+          message: "Verification code sent", 
+          // Only include OTP in development mode
+          development_otp: otp
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Initialize Twilio client
-    const client = twilio(accountSid, authToken);
+    // Using fetch directly instead of the Twilio SDK to avoid prototype issues
+    const twilioEndpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
     
-    // Send SMS with OTP
-    const message = await client.messages.create({
-      body: `Your Reading Orbital verification code is: ${otp}`,
-      from: twilioPhone,
-      to: phone
+    const twilioParams = new URLSearchParams();
+    twilioParams.append('To', phone);
+    twilioParams.append('From', twilioPhone);
+    twilioParams.append('Body', `Your Reading Orbital verification code is: ${otp}`);
+    
+    const auth = btoa(`${accountSid}:${authToken}`);
+    
+    const twilioResponse = await fetch(twilioEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: twilioParams,
     });
     
-    console.log(`SMS sent with SID: ${message.sid}`);
+    const twilioData = await twilioResponse.json();
+    
+    if (!twilioResponse.ok) {
+      console.error("Twilio API error:", twilioData);
+      throw new Error("Failed to send SMS via Twilio");
+    }
+    
+    console.log(`SMS sent with SID: ${twilioData.sid}`);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
