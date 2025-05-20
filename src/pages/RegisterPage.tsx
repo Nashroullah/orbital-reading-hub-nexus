@@ -282,7 +282,6 @@ const RegisterPage: React.FC = () => {
                     )}
                     <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm">
                       <p>A 6-digit verification code will be sent to this phone number.</p>
-                      <p className="mt-1 text-xs">For demo purposes, the code will be displayed on screen.</p>
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col space-y-4">

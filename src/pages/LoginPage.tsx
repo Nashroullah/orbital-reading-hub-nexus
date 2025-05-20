@@ -180,7 +180,6 @@ const LoginPage: React.FC = () => {
                     )}
                     <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm font-montserrat">
                       <p>A 6-digit verification code will be sent to this phone number.</p>
-                      <p className="mt-1 text-xs">For demo purposes, the code will be displayed on screen.</p>
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col space-y-4">
@@ -201,20 +200,6 @@ const LoginPage: React.FC = () => {
                 </form>
               </TabsContent>
             </Tabs>
-            
-            <div className="px-6 pb-6">
-              <div className="text-xs text-center text-muted-foreground font-montserrat">
-                For demo purposes, use:
-                <br />
-                <code>admin@reading-orbital.com</code> / <code>password</code> (Admin)
-                <br />
-                <code>faculty@reading-orbital.com</code> / <code>password</code> (Faculty)
-                <br />
-                <code>student@reading-orbital.com</code> / <code>password</code> (Student)
-                <br />
-                <code>+1234567890</code> (Admin with phone)
-              </div>
-            </div>
           </Card>
         </div>
       </div>

@@ -31,6 +31,12 @@ export const registerWithEmail = async (
     throw new Error('Email already registered');
   }
 
+  // Check if requesting admin role and if an admin already exists
+  if (role === 'admin' && users.some(u => u.role === 'admin')) {
+    toast.error("An admin account already exists");
+    throw new Error('Admin account already exists');
+  }
+
   // Create new user
   const newUser: User = {
     id: (users.length + 1).toString(),
@@ -55,6 +61,12 @@ export const sendPhoneVerification = async (phone: string, users: User[], isRegi
     if (users.some(u => u.phone === phone)) {
       toast.error("Phone number already registered");
       throw new Error('Phone number already registered');
+    }
+
+    // Check if requesting admin role and if an admin already exists
+    if (role === 'admin' && users.some(u => u.role === 'admin')) {
+      toast.error("An admin account already exists");
+      throw new Error('Admin account already exists');
     }
   } else {
     // Check if phone exists for login
@@ -94,6 +106,12 @@ export const verifyPhoneOTP = async (phone: string, otp: string, users: User[], 
   
   // If we have pending verification data, this is a registration flow
   if (pendingVerification?.name && pendingVerification?.role) {
+    // Check if requesting admin role and if an admin already exists
+    if (pendingVerification.role === 'admin' && users.some(u => u.role === 'admin')) {
+      toast.error("An admin account already exists");
+      throw new Error('Admin account already exists');
+    }
+    
     // Create new user
     const newUser: User = {
       id: (users.length + 1).toString(),
@@ -163,6 +181,21 @@ export const getUsersList = (users: User[], currentUser: User | null) => {
 export const updateRole = (userId: string, newRole: UserRole, users: User[], currentUser: User | null) => {
   if (currentUser?.role !== 'admin') {
     toast.error("You don't have permission to update user roles");
+    return { users, updatedCurrentUser: currentUser };
+  }
+
+  // Prevent changing the only admin's role
+  const adminUsers = users.filter(u => u.role === 'admin');
+  const targetUser = users.find(u => u.id === userId);
+  
+  if (targetUser?.role === 'admin' && adminUsers.length === 1 && newRole !== 'admin') {
+    toast.error("Cannot change the only admin account to a non-admin role");
+    return { users, updatedCurrentUser: currentUser };
+  }
+
+  // Check if trying to create a second admin
+  if (newRole === 'admin' && adminUsers.length >= 1 && targetUser?.role !== 'admin') {
+    toast.error("Only one admin account is allowed");
     return { users, updatedCurrentUser: currentUser };
   }
 

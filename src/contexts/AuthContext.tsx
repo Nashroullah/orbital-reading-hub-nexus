@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Clear the pending verification if it was a registration
       if (isRegistration) {
-        const newVerifications = { ...pendingVerifications };
+        const newVerifications: Record<string, { name?: string, role?: UserRole }> = { ...pendingVerifications };
         delete newVerifications[phone];
         setPendingVerifications(newVerifications);
       }
@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const pendingData = await authService.sendPhoneVerification(phone, users, true, name, role);
       
       // Store the registration data for verification
-      const newVerifications = { 
+      const newVerifications: Record<string, { name?: string, role?: UserRole }> = { 
         ...pendingVerifications,
         [phone]: { name: pendingData.name, role: pendingData.role }
       };
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Re-export UserRole from types file - Fixed to use 'export type'
+// Re-export UserRole from types file
 export type { UserRole } from '@/types/auth';
 
 // Custom hook for easy access to auth context
