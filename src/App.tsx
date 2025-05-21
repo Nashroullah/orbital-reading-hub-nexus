@@ -22,6 +22,8 @@ import MyBooksPage from "./pages/MyBooksPage";
 import ProfilePage from "./pages/ProfilePage";
 import FeedbackPage from "./pages/FeedbackPage";
 import SearchPage from "./pages/SearchPage";
+import ActivityPage from "./pages/ActivityPage";
+import CalendarPage from "./pages/CalendarPage";
 
 // Admin Pages
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
@@ -61,6 +63,8 @@ const App = () => (
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/feedback" element={<FeedbackPage />} />
                   <Route path="/search" element={<SearchPage />} />
+                  <Route path="/activity" element={<ActivityPage />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
                   
                   {/* Admin routes */}
                   <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
