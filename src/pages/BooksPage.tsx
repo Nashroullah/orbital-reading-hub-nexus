@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { StarIcon, Search } from 'lucide-react';
+import { StarIcon, Search, BookOpen } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
 
 const BooksPage: React.FC = () => {
   const { books, searchBooks } = useLibrary();
@@ -15,11 +16,11 @@ const BooksPage: React.FC = () => {
   const filteredBooks = searchQuery ? searchBooks(searchQuery) : books;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4">
+    <div className="space-y-8 max-w-7xl mx-auto px-4 py-8">
       <div>
         <h1 className="text-3xl font-serif font-bold mb-2">Library Books</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Browse our collection of books across various genres
+          Browse our collection of {books.length} books across various genres
         </p>
       </div>
       
@@ -34,43 +35,57 @@ const BooksPage: React.FC = () => {
         />
       </div>
       
-      {/* Responsive Book Grid with consistent card heights */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {filteredBooks.map((book) => (
-          <Card key={book.id} className="overflow-hidden flex flex-col h-full">
-            <Link to={`/books/${book.id}`} className="block">
-              <AspectRatio ratio={2/3} className="bg-muted">
-                <img 
-                  src={book.coverImage}
-                  alt={`Cover of ${book.title}`} 
-                  className="w-full h-full object-cover transition-transform hover:scale-105"
-                />
-              </AspectRatio>
-            </Link>
-            <CardContent className="p-4 flex flex-col flex-grow">
-              <Link to={`/books/${book.id}`} className="hover:underline">
-                <h3 className="font-medium mb-1 line-clamp-2 min-h-[2.5rem]">{book.title}</h3>
+      {filteredBooks.length === 0 ? (
+        <div className="text-center py-12">
+          <BookOpen className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium mb-2">No books found</h3>
+          <p className="text-gray-500">Try adjusting your search criteria</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {filteredBooks.map((book) => (
+            <Card key={book.id} className="overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow">
+              <Link to={`/books/${book.id}`} className="block">
+                <AspectRatio ratio={2/3} className="bg-muted">
+                  <img 
+                    src={book.coverImage}
+                    alt={`Cover of ${book.title}`} 
+                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+                    }}
+                  />
+                </AspectRatio>
               </Link>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{book.author}</p>
-              <div className="flex items-center mb-2">
-                <div className="flex items-center">
-                  <StarIcon className="h-4 w-4 text-yellow-500 mr-1" fill="currentColor" />
-                  <span className="text-sm font-medium">{book.averageRating.toFixed(1)}</span>
+              <CardContent className="p-4 flex flex-col flex-grow">
+                <div className="mb-2">
+                  <Badge variant="outline" className="text-xs">{book.genre}</Badge>
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                  ({book.totalRatings} {book.totalRatings === 1 ? 'review' : 'reviews'})
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-auto">
-                {book.availableCopies}/{book.totalCopies} copies available
-              </p>
-              <Button size="sm" className="w-full mt-4" asChild>
-                <Link to={`/books/${book.id}`}>View Details</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <Link to={`/books/${book.id}`} className="hover:underline">
+                  <h3 className="font-medium mb-1 line-clamp-2 min-h-[2.5rem]">{book.title}</h3>
+                </Link>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{book.author}</p>
+                <div className="flex items-center mb-2">
+                  <div className="flex items-center">
+                    <StarIcon className="h-4 w-4 text-yellow-500 mr-1" fill="currentColor" />
+                    <span className="text-sm font-medium">{book.averageRating.toFixed(1)}</span>
+                  </div>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                    ({book.totalRatings} {book.totalRatings === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-auto">
+                  {book.availableCopies}/{book.totalCopies} copies available
+                </p>
+                <Button size="sm" className="w-full mt-4" asChild>
+                  <Link to={`/books/${book.id}`}>View Details</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

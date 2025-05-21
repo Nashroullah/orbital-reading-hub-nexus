@@ -4,8 +4,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useLibrary } from '@/contexts/LibraryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Star, BookCopy } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { ArrowLeft, Star, BookCopy, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
@@ -23,6 +23,7 @@ const BookDetailPage: React.FC = () => {
   if (!book) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
+        <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
         <h2 className="text-2xl font-bold mb-4">Book Not Found</h2>
         <p className="mb-6 text-gray-600">Sorry, we couldn't find the book you're looking for.</p>
         <Button asChild>
@@ -37,7 +38,7 @@ const BookDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto px-4">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
       <Link to="/books" className="flex items-center text-primary hover:underline mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Books
@@ -51,6 +52,10 @@ const BookDetailPage: React.FC = () => {
               src={book.coverImage} 
               alt={`Cover of ${book.title}`} 
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+              }}
             />
           </AspectRatio>
           <Button 
