@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext } from 'react';
 import { toast } from "@/components/ui/sonner";
-import { User, UserRole, AuthContextType, PendingVerification } from '@/types/auth';
+import { User, UserRole, AuthContextType, PhoneVerificationResponse, VoiceOTPResponse } from '@/types/auth';
 import { useAuthState } from '@/hooks/useAuthState';
 import * as authService from '@/services/authService';
 
@@ -10,11 +10,11 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   login: async () => {},
-  loginWithPhone: async () => {},
+  loginWithPhone: async () => ({ development_otp: '' }),
   verifyOTP: async () => {},
   register: async () => {},
-  registerWithPhone: async () => {},
-  requestVoiceOTP: async () => {},
+  registerWithPhone: async () => ({ development_otp: '' }),
+  requestVoiceOTP: async () => ({ success: true }),
   logout: () => {},
   requestPasswordReset: async () => {},
   resetPassword: async () => {},
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Login with phone function
-  const loginWithPhone = async (phone: string) => {
+  const loginWithPhone = async (phone: string): Promise<PhoneVerificationResponse> => {
     try {
       setIsLoading(true);
       const response = await authService.sendPhoneVerification(phone, users, false);
@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Request voice call OTP
-  const requestVoiceOTP = async (phone: string) => {
+  const requestVoiceOTP = async (phone: string): Promise<VoiceOTPResponse> => {
     try {
       setIsLoading(true);
       
@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Register with phone function
-  const registerWithPhone = async (name: string, phone: string, role: UserRole) => {
+  const registerWithPhone = async (name: string, phone: string, role: UserRole): Promise<PhoneVerificationResponse> => {
     try {
       setIsLoading(true);
       
