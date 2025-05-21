@@ -12,8 +12,16 @@ import { Badge } from '@/components/ui/badge';
 const BooksPage: React.FC = () => {
   const { books, searchBooks } = useLibrary();
   const [searchQuery, setSearchQuery] = useState('');
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   
   const filteredBooks = searchQuery ? searchBooks(searchQuery) : books;
+
+  const handleImageError = (bookId: string) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [bookId]: true
+    }));
+  };
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4 py-8">
@@ -48,13 +56,10 @@ const BooksPage: React.FC = () => {
               <Link to={`/books/${book.id}`} className="block">
                 <AspectRatio ratio={2/3} className="bg-muted">
                   <img 
-                    src={book.coverImage}
+                    src={imageErrors[book.id] ? "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" : book.coverImage}
                     alt={`Cover of ${book.title}`} 
                     className="w-full h-full object-cover transition-transform hover:scale-105"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-                    }}
+                    onError={() => handleImageError(book.id)}
                   />
                 </AspectRatio>
               </Link>

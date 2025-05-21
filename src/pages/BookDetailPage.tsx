@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLibrary } from '@/contexts/LibraryContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +13,7 @@ const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { getBook, borrowBook } = useLibrary();
   const { isAuthenticated } = useAuth();
+  const [imageError, setImageError] = useState(false);
 
   if (!id) {
     return <div>Book ID not found</div>;
@@ -37,6 +38,12 @@ const BookDetailPage: React.FC = () => {
     borrowBook(id);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const fallbackImage = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
       <Link to="/books" className="flex items-center text-primary hover:underline mb-6">
@@ -49,13 +56,10 @@ const BookDetailPage: React.FC = () => {
         <div className="md:col-span-1">
           <AspectRatio ratio={2/3} className="rounded-lg overflow-hidden shadow-lg mb-6">
             <img 
-              src={book.coverImage} 
+              src={imageError ? fallbackImage : book.coverImage} 
               alt={`Cover of ${book.title}`} 
               className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-              }}
+              onError={handleImageError}
             />
           </AspectRatio>
           <Button 
