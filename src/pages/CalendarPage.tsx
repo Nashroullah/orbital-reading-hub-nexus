@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Calendar as CalendarIcon, Clock } from "lucide-react";
 
 const CalendarPage: React.FC = () => {
-  const { getUserActivities, getUserBorrowedBooks } = useLibrary();
+  const { getUserActivities, getUserBorrowedBooks, getBook } = useLibrary();
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
@@ -131,11 +131,15 @@ const CalendarPage: React.FC = () => {
                   <h3 className="font-medium">Books Borrowed</h3>
                 </div>
                 <ul className="mt-1 space-y-1">
-                  {selectedDayBorrowed.map((book, idx) => (
-                    <li key={`borrowed-${idx}`} className="text-sm">
-                      {book.title} by {book.author}
-                    </li>
-                  ))}
+                  {selectedDayBorrowed.map((borrowedBook, idx) => {
+                    // Look up the book details using the bookId
+                    const book = getBook(borrowedBook.bookId);
+                    return (
+                      <li key={`borrowed-${idx}`} className="text-sm">
+                        {book ? `${book.title} by ${book.author}` : `Book ID: ${borrowedBook.bookId}`}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
@@ -147,12 +151,16 @@ const CalendarPage: React.FC = () => {
                   <h3 className="font-medium">Books Due</h3>
                 </div>
                 <ul className="mt-1 space-y-1">
-                  {selectedDayDue.map((book, idx) => (
-                    <li key={`due-${idx}`} className="text-sm">
-                      {book.title} by {book.author}
-                      <Badge className="ml-2 bg-red-500">Due Today</Badge>
-                    </li>
-                  ))}
+                  {selectedDayDue.map((borrowedBook, idx) => {
+                    // Look up the book details using the bookId
+                    const book = getBook(borrowedBook.bookId);
+                    return (
+                      <li key={`due-${idx}`} className="text-sm">
+                        {book ? `${book.title} by ${book.author}` : `Book ID: ${borrowedBook.bookId}`}
+                        <Badge className="ml-2 bg-red-500">Due Today</Badge>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
