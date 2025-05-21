@@ -44,10 +44,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Login with phone function
-  const loginWithPhone = async (phone: string): Promise<void> => {
+  const loginWithPhone = async (phone: string) => {
     try {
       setIsLoading(true);
-      await authService.sendPhoneVerification(phone, users, false);
+      const response = await authService.sendPhoneVerification(phone, users, false);
+      return response; // Return the response which might contain development_otp
     } catch (err) {
       console.error("Error sending OTP:", err);
       throw err;
@@ -57,13 +58,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Request voice call OTP
-  const requestVoiceOTP = async (phone: string): Promise<void> => {
+  const requestVoiceOTP = async (phone: string) => {
     try {
       setIsLoading(true);
       
       // Check if this is a registration flow
       const isRegistration = !!pendingVerifications[phone];
-      await authService.requestVoiceOTP(phone, users, isRegistration);
+      const response = await authService.requestVoiceOTP(phone, users, isRegistration);
+      return response; // Return the response which might contain development_otp
     } catch (err) {
       console.error("Error requesting voice OTP:", err);
       throw err;
@@ -117,19 +119,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Register with phone function
-  const registerWithPhone = async (name: string, phone: string, role: UserRole): Promise<void> => {
+  const registerWithPhone = async (name: string, phone: string, role: UserRole) => {
     try {
       setIsLoading(true);
       
-      const pendingData = await authService.sendPhoneVerification(phone, users, true, name, role);
+      const response = await authService.sendPhoneVerification(phone, users, true, name, role);
       
       // Store the registration data for verification
       const newVerifications: Record<string, { name?: string, role?: UserRole }> = { 
         ...pendingVerifications,
-        [phone]: { name: pendingData.name, role: pendingData.role }
+        [phone]: { name: response.name, role: response.role }
       };
       setPendingVerifications(newVerifications);
       
+      return response; // Return the response which might contain development_otp
     } catch (err) {
       console.error("Error sending OTP:", err);
       throw err;

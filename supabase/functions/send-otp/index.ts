@@ -23,6 +23,15 @@ serve(async (req) => {
       );
     }
 
+    // Validate Indian phone number
+    const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+    if (!indianPhoneRegex.test(phone)) {
+      return new Response(
+        JSON.stringify({ error: "Please enter a valid Indian phone number" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (channel !== 'sms' && channel !== 'call') {
       return new Response(
         JSON.stringify({ error: "Channel must be 'sms' or 'call'" }),
@@ -44,8 +53,7 @@ serve(async (req) => {
       // For development purposes, return the OTP directly in response
       console.log(`Development mode: Generated OTP for ${phone} is ${otp}`);
       
-      // We'll return the OTP in development mode without trying to store it
-      // This bypasses the database error that's occurring
+      // Return the OTP in development mode
       return new Response(
         JSON.stringify({ 
           success: true, 
@@ -111,7 +119,7 @@ serve(async (req) => {
     
     console.log(`${channel === 'sms' ? 'SMS' : 'Voice call'} initiated with SID: ${twilioData.sid}`);
     
-    // Return success response
+    // Return success response - include the OTP in development mode for testing
     return new Response(
       JSON.stringify({ 
         success: true, 

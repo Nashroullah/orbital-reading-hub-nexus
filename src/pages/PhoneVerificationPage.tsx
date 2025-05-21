@@ -19,7 +19,7 @@ const PhoneVerificationPage: React.FC = () => {
   const [otp, setOtp] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [useManualInput, setUseManualInput] = useState(false);
+  const [useManualInput, setUseManualInput] = useState(true); // Default to manual input
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -27,6 +27,7 @@ const PhoneVerificationPage: React.FC = () => {
   const isRegistration = queryParams.get('isRegistration') === 'true';
   const name = queryParams.get('name') || '';
   const role = queryParams.get('role') || 'student';
+  const [developmentOtp, setDevelopmentOtp] = useState<string>('');
 
   useEffect(() => {
     if (!phone) {
@@ -34,6 +35,16 @@ const PhoneVerificationPage: React.FC = () => {
       navigate('/login');
     }
   }, [phone, navigate]);
+
+  // Check URL for development OTP
+  useEffect(() => {
+    const devOtp = queryParams.get('dev_otp');
+    if (devOtp) {
+      setDevelopmentOtp(devOtp);
+      setOtp(devOtp);
+      toast.info("Development OTP pre-filled for testing");
+    }
+  }, [queryParams]);
 
   // Cooldown timer for resend button
   useEffect(() => {
@@ -57,6 +68,7 @@ const PhoneVerificationPage: React.FC = () => {
     
     try {
       await verifyOTP(phone, otp);
+      toast.success('Verification successful!');
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
@@ -85,15 +97,33 @@ const PhoneVerificationPage: React.FC = () => {
     try {
       setIsLoading(true);
       if (viaCall) {
-        await requestVoiceOTP(phone);
-        toast.success("You will receive a call shortly with your verification code");
-      } else {
-        if (isRegistration) {
-          await registerWithPhone(name, phone, role as any);
+        const response = await requestVoiceOTP(phone);
+        // Check if we got a development OTP
+        if (response?.development_otp) {
+          setDevelopmentOtp(response.development_otp);
+          toast.info(`Development OTP: ${response.development_otp}`, {
+            duration: 10000,
+          });
         } else {
-          await loginWithPhone(phone);
+          toast.success("You will receive a call shortly with your verification code");
         }
-        toast.success("Verification code resent to your phone");
+      } else {
+        let response;
+        if (isRegistration) {
+          response = await registerWithPhone(name, phone, role as any);
+        } else {
+          response = await loginWithPhone(phone);
+        }
+
+        // Check if we got a development OTP
+        if (response?.development_otp) {
+          setDevelopmentOtp(response.development_otp);
+          toast.info(`Development OTP: ${response.development_otp}`, {
+            duration: 10000,
+          });
+        } else {
+          toast.success("Verification code resent to your phone");
+        }
       }
       setResendCooldown(60); // 60 seconds cooldown
     } catch (err) {
@@ -166,6 +196,13 @@ const PhoneVerificationPage: React.FC = () => {
                   {useManualInput ? "Use digit-by-digit input" : "Enter code manually"}
                 </button>
               </div>
+
+              {developmentOtp && (
+                <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm text-center">
+                  <p className="font-semibold">Development Mode</p>
+                  <p>OTP for testing: <span className="font-mono font-bold">{developmentOtp}</span></p>
+                </div>
+              )}
               
               <div className="text-sm text-center text-muted-foreground font-montserrat space-y-2">
                 <p>

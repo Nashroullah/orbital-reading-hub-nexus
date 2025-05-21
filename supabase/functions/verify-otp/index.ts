@@ -22,6 +22,15 @@ serve(async (req) => {
       );
     }
     
+    // Validate Indian phone number
+    const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+    if (!indianPhoneRegex.test(phone)) {
+      return new Response(
+        JSON.stringify({ error: "Please enter a valid Indian phone number" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
     // In development mode, accept any 6-digit OTP
     if (otp.length === 6 && /^\d+$/.test(otp)) {
       console.log(`Development mode: Accepting OTP ${otp} for ${phone}`);

@@ -51,6 +51,13 @@ export const registerWithEmail = async (
 };
 
 export const sendPhoneVerification = async (phone: string, users: User[], isRegistration: boolean, name?: string, role?: UserRole) => {
+  // Validate Indian phone number
+  const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+  if (!indianPhoneRegex.test(phone)) {
+    toast.error("Please enter a valid Indian phone number");
+    throw new Error("Please enter a valid Indian phone number starting with +91 followed by 10 digits");
+  }
+
   if (isRegistration) {
     // Check if phone already exists
     if (users.some(u => u.phone === phone)) {
@@ -78,12 +85,31 @@ export const sendPhoneVerification = async (phone: string, users: User[], isRegi
     throw new Error('Failed to send verification code');
   }
   
-  toast.success("Verification code sent to your phone");
+  // If we're in development, show the OTP
+  if (data?.development_otp) {
+    console.log(`Development OTP: ${data.development_otp}`);
+    toast.info(`Development OTP: ${data.development_otp}`, {
+      duration: 10000,
+    });
+  } else {
+    toast.success("Verification code sent to your phone");
+  }
 
-  return { name, role }; // Return data for pending verification if registration
+  return { 
+    name, 
+    role,
+    development_otp: data?.development_otp 
+  }; 
 };
 
 export const requestVoiceOTP = async (phone: string, users: User[], isRegistration: boolean) => {
+  // Validate Indian phone number
+  const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+  if (!indianPhoneRegex.test(phone)) {
+    toast.error("Please enter a valid Indian phone number");
+    throw new Error("Please enter a valid Indian phone number starting with +91 followed by 10 digits");
+  }
+
   if (isRegistration) {
     // Check if phone already exists
     if (users.some(u => u.phone === phone)) {
@@ -111,10 +137,27 @@ export const requestVoiceOTP = async (phone: string, users: User[], isRegistrati
     throw new Error('Failed to initiate verification call');
   }
   
-  toast.success("You will receive a call shortly with your verification code");
+  // If we're in development, show the OTP
+  if (data?.development_otp) {
+    console.log(`Development Voice OTP: ${data.development_otp}`);
+    toast.info(`Development Voice OTP: ${data.development_otp}`, {
+      duration: 10000,
+    });
+    return { development_otp: data.development_otp };
+  } else {
+    toast.success("You will receive a call shortly with your verification code");
+    return { success: true };
+  }
 };
 
 export const verifyPhoneOTP = async (phone: string, otp: string, users: User[], pendingVerification?: {name?: string, role?: UserRole}) => {
+  // Validate Indian phone number
+  const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+  if (!indianPhoneRegex.test(phone)) {
+    toast.error("Invalid phone number format");
+    throw new Error("Invalid phone number format");
+  }
+
   // Call the verify-otp function to verify the code
   const { data, error } = await supabase.functions.invoke('verify-otp', {
     body: { phone, otp },

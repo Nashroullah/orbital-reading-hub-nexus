@@ -30,7 +30,7 @@ const RegisterPage: React.FC = () => {
   
   // Phone registration state
   const [phoneName, setPhoneName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+91');
   
   // Common state
   const [role, setRole] = useState<UserRole>('student');
@@ -77,6 +77,13 @@ const RegisterPage: React.FC = () => {
 
     if (!phone) {
       setError('Phone number is required');
+      return;
+    }
+
+    // Validate Indian phone number
+    const indianPhoneRegex = /^\+91[6-9]\d{9}$/;
+    if (!indianPhoneRegex.test(phone)) {
+      setError('Please enter a valid Indian phone number starting with +91 followed by 10 digits');
       return;
     }
 
@@ -245,16 +252,26 @@ const RegisterPage: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input 
-                        id="phone" 
-                        type="tel" 
-                        placeholder="+1234567890"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                      />
+                      <div className="flex items-center">
+                        <span className="bg-gray-100 border border-gray-300 px-3 py-2 rounded-l text-gray-700">+91</span>
+                        <Input 
+                          id="phone" 
+                          type="tel" 
+                          placeholder="9876543210"
+                          value={phone.substring(3)} // Remove the +91 prefix for display
+                          onChange={(e) => {
+                            // Only allow numbers and limit to 10 digits
+                            const value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 10) {
+                              setPhone('+91' + value);
+                            }
+                          }}
+                          className="rounded-l-none"
+                          required
+                        />
+                      </div>
                       <p className="text-xs text-muted-foreground">
-                        Include country code (e.g., +1 for US)
+                        Enter your 10-digit Indian mobile number
                       </p>
                     </div>
                     <div className="space-y-2">
