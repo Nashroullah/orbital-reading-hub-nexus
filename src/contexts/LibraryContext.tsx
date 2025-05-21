@@ -120,7 +120,7 @@ const generateMockBooks = (): Book[] => [
     id: '1',
     title: 'To Kill a Mockingbird',
     author: 'Harper Lee',
-    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fiction',
     description: 'The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it.',
     isbn: '978-0061120084',
@@ -135,7 +135,7 @@ const generateMockBooks = (): Book[] => [
     id: '2',
     title: '1984',
     author: 'George Orwell',
-    coverImage: 'https://images.unsplash.com/photo-1571824170220-1f6de438f73d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1571824170220-1f6de438f73d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Science Fiction',
     description: 'A chilling vision of a dystopian future that remains relevant today. Required reading for understanding modern surveillance.',
     isbn: '978-0451524935',
@@ -150,7 +150,7 @@ const generateMockBooks = (): Book[] => [
     id: '3',
     title: 'The Great Gatsby',
     author: 'F. Scott Fitzgerald',
-    coverImage: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ym9vayUyMGNvdmVyfGVufDB8fDB8fHww',
+    coverImage: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fiction',
     description: 'A tragic story about the American dream, love, wealth, and excess.',
     isbn: '978-0743273565',
@@ -165,7 +165,7 @@ const generateMockBooks = (): Book[] => [
     id: '4',
     title: 'Pride and Prejudice',
     author: 'Jane Austen',
-    coverImage: 'https://images.unsplash.com/photo-1603162617002-f880f561cee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1603162617002-f880f561cee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Romance',
     description: 'A romantic novel of manners that depicts the emotional development of the protagonist, Elizabeth Bennet.',
     isbn: '978-0141439518',
@@ -180,7 +180,7 @@ const generateMockBooks = (): Book[] => [
     id: '5',
     title: 'Brave New World',
     author: 'Aldous Huxley',
-    coverImage: 'https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzd8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Science Fiction',
     description: 'A dystopian novel set in a futuristic World State, inhabited by genetically modified citizens.',
     isbn: '978-0060850524',
@@ -195,7 +195,7 @@ const generateMockBooks = (): Book[] => [
     id: '6',
     title: 'The Hobbit',
     author: 'J.R.R. Tolkien',
-    coverImage: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Ym9vayUyMGNvdmVyfGVufDB8fDB8fHww',
+    coverImage: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fantasy',
     description: 'A fantasy novel about the quest of home-loving Bilbo Baggins to win a share of the treasure guarded by Smaug the dragon.',
     isbn: '978-0547928227',
@@ -210,7 +210,7 @@ const generateMockBooks = (): Book[] => [
     id: '7',
     title: 'Harry Potter and the Philosopher\'s Stone',
     author: 'J.K. Rowling',
-    coverImage: 'https://images.unsplash.com/photo-1626618012641-bfbca5a31239?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1626618012641-bfbca5a31239?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fantasy',
     description: 'The first novel in the Harry Potter series, featuring a young wizard who discovers his magical heritage.',
     isbn: '978-0747532699',
@@ -225,7 +225,7 @@ const generateMockBooks = (): Book[] => [
     id: '8',
     title: 'The Lord of the Rings',
     author: 'J.R.R. Tolkien',
-    coverImage: 'https://images.unsplash.com/photo-1671028452060-84a5f1e99f76?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGJvb2slMjBjb3ZlcnxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1671028452060-84a5f1e99f76?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fantasy',
     description: 'An epic high fantasy novel that follows the quest to destroy the One Ring, which was created by the Dark Lord Sauron.',
     isbn: '978-0618640157',
@@ -240,7 +240,7 @@ const generateMockBooks = (): Book[] => [
     id: '9',
     title: 'A Brief History of Time',
     author: 'Stephen Hawking',
-    coverImage: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjaWVuY2UlMjBjb3NtaWN8ZW58MHx8MHx8fDA%3D',
+    coverImage: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Science',
     description: 'A landmark volume in science writing that explores the nature of the universe and our place within it.',
     isbn: '978-0553380163',
@@ -255,7 +255,7 @@ const generateMockBooks = (): Book[] => [
     id: '10',
     title: 'The Alchemist',
     author: 'Paulo Coelho',
-    coverImage: 'https://images.unsplash.com/photo-1613336026275-d6d473084e85?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVzZXJ0JTIwam91cm5leXxlbnwwfHwwfHx8MA%3D%3D',
+    coverImage: 'https://images.unsplash.com/photo-1613336026275-d6d473084e85?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fiction',
     description: 'A philosophical novel that follows the journey of a young Andalusian shepherd named Santiago in his quest for treasure.',
     isbn: '978-0062315007',
@@ -270,7 +270,7 @@ const generateMockBooks = (): Book[] => [
     id: '11',
     title: 'Sapiens: A Brief History of Humankind',
     author: 'Yuval Noah Harari',
-    coverImage: 'https://images.unsplash.com/photo-1545465270-b28c72e73088?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aHVtYW5pdHl8ZW58MHx8MHx8fDA%3D',
+    coverImage: 'https://images.unsplash.com/photo-1545465270-b28c72e73088?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'History',
     description: 'A book that explores the history and impact of Homo sapiens across the planet, from ancient times to the present.',
     isbn: '978-0062316097',
@@ -285,7 +285,7 @@ const generateMockBooks = (): Book[] => [
     id: '12',
     title: 'The Silent Patient',
     author: 'Alex Michaelides',
-    coverImage: 'https://images.unsplash.com/photo-1604154864724-1c9f9bee3b20?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNpbGVudCUyMHdvbWFufGVufDB8fDB8fHww',
+    coverImage: 'https://images.unsplash.com/photo-1604154864724-1c9f9bee3b20?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Thriller',
     description: 'A psychological thriller about a woman who shoots her husband and then stops speaking, and the therapist determined to treat her.',
     isbn: '978-1250301697',
@@ -300,7 +300,7 @@ const generateMockBooks = (): Book[] => [
     id: '13',
     title: 'Atomic Habits',
     author: 'James Clear',
-    coverImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2R1Y3Rpdml0eXxlbnwwfHwwfHx8MA%3D',
+    coverImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Self-Help',
     description: 'A guide about how tiny changes can lead to remarkable results in forming good habits and breaking bad ones.',
     isbn: '978-0735211292',
@@ -315,7 +315,7 @@ const generateMockBooks = (): Book[] => [
     id: '14',
     title: 'Educated',
     author: 'Tara Westover',
-    coverImage: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bW91bnRhaW4lMjBmYW1pbHl8ZW58MHx8MHx8fDA%3D',
+    coverImage: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Memoir',
     description: 'A memoir about a young girl who leaves her survivalist family and goes on to earn a PhD from Cambridge University.',
     isbn: '978-0399590504',
@@ -330,7 +330,7 @@ const generateMockBooks = (): Book[] => [
     id: '15',
     title: 'The Midnight Library',
     author: 'Matt Haig',
-    coverImage: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGlicmFyeXxlbnwwfHwwfHx8MA%3D',
+    coverImage: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Fiction',
     description: 'A novel about a library beyond the edge of the universe that contains books with alternate versions of your life.',
     isbn: '978-0525559474',
@@ -345,7 +345,7 @@ const generateMockBooks = (): Book[] => [
     id: '16',
     title: 'Dune',
     author: 'Frank Herbert',
-    coverImage: 'https://images.unsplash.com/photo-1682687982501-1e58ab814714?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxzZWFyY2h8MXx8ZGVzZXJ0fGVufDB8fDB8fHww',
+    coverImage: 'https://images.unsplash.com/photo-1682687982501-1e58ab814714?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Science Fiction',
     description: 'A science fiction novel set in the distant future amidst a feudal interstellar society where noble houses control individual planets.',
     isbn: '978-0441172719',
@@ -355,7 +355,82 @@ const generateMockBooks = (): Book[] => [
     availableCopies: 16,
     averageRating: 4.7,
     totalRatings: 210
-  }
+  },
+  {
+    id: '17',
+    title: 'The Catcher in the Rye',
+    author: 'J.D. Salinger',
+    coverImage: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+    genre: 'Fiction',
+    description: 'A classic novel about a teenager\'s experiences of alienation and his search for authenticity in the "phony" adult world.',
+    isbn: '978-0316769488',
+    publicationYear: 1951,
+    available: true,
+    totalCopies: 14,
+    availableCopies: 11,
+    averageRating: 4.2,
+    totalRatings: 130
+  },
+  {
+    id: '18',
+    title: 'The Da Vinci Code',
+    author: 'Dan Brown',
+    coverImage: 'https://images.unsplash.com/photo-1557131903-a81ecc5a8962?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+    genre: 'Mystery',
+    description: 'A mystery thriller that follows symbologist Robert Langdon as he investigates a murder in Paris\'s Louvre Museum.',
+    isbn: '978-0307474278',
+    publicationYear: 2003,
+    available: true,
+    totalCopies: 19,
+    availableCopies: 14,
+    averageRating: 4.1,
+    totalRatings: 190
+  },
+  {
+    id: '19',
+    title: 'Think and Grow Rich',
+    author: 'Napoleon Hill',
+    coverImage: 'https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+    genre: 'Self-Help',
+    description: 'One of the best-selling books of all time, examining the psychological power of thought and the role it plays in success.',
+    isbn: '978-1585424337',
+    publicationYear: 1937,
+    available: true,
+    totalCopies: 15,
+    availableCopies: 12,
+    averageRating: 4.7,
+    totalRatings: 165
+  },
+  {
+    id: '20',
+    title: 'The Girl on the Train',
+    author: 'Paula Hawkins',
+    coverImage: 'https://images.unsplash.com/photo-1557570091-5eb43b215eeb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+    genre: 'Thriller',
+    description: 'A psychological thriller about a divorced alcoholic who becomes entangled in a missing person investigation.',
+    isbn: '978-1594634024',
+    publicationYear: 2015,
+    available: true,
+    totalCopies: 12,
+    availableCopies: 9,
+    averageRating: 4.0,
+    totalRatings: 130
+  },
+  {
+    id: '21',
+    title: 'Thinking, Fast and Slow',
+    author: 'Daniel Kahneman',
+    coverImage: 'https://images.unsplash.com/photo-1575550596614-137f0833be19?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+    genre: 'Psychology',
+    description: 'A book that summarizes research on the two systems that drive the way we think: System 1, which is fast, intuitive, and emotional; and System 2, which is slower, more deliberative, and more logical.',
+    isbn: '978-0374533557',
+    publicationYear: 2011,
+    available: true,
+    totalCopies: 13,
+    availableCopies: 9,
+    averageRating: 4.6,
+    totalRatings: 155
+  },
 ];
 
 // Mock reviews
@@ -931,23 +1006,9 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
-    // Generate a random cover based on the genre
-    let coverImage = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    // Generate a cover image based on genre, title, or author
+    let coverImage = getBookCoverByMetadata(bookData);
     
-    if (bookData.genre) {
-      if (bookData.genre.toLowerCase().includes('fiction')) {
-        coverImage = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-      } else if (bookData.genre.toLowerCase().includes('science fiction')) {
-        coverImage = "https://images.unsplash.com/photo-1571824170220-1f6de438f73d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-      } else if (bookData.genre.toLowerCase().includes('romance')) {
-        coverImage = "https://images.unsplash.com/photo-1603162617002-f880f561cee5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-      } else if (bookData.genre.toLowerCase().includes('fantasy')) {
-        coverImage = "https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-      } else if (bookData.genre.toLowerCase().includes('history')) {
-        coverImage = "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-      }
-    }
-
     const newBook: Book = {
       id: (books.length + 1).toString(),
       title: bookData.title,
@@ -965,6 +1026,51 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     setBooks([...books, newBook]);
+  };
+
+  // Helper function to get a book cover based on metadata
+  const getBookCoverByMetadata = (book: Partial<Book>) => {
+    // Default cover
+    let coverImage = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    
+    // Try to find a suitable image based on title, author, or genre
+    if (book.title?.toLowerCase().includes('javascript') || 
+        (book.genre && book.genre.toLowerCase().includes('programming'))) {
+      coverImage = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title?.toLowerCase().includes('design') ||
+              (book.genre && book.genre.toLowerCase().includes('design'))) {
+      coverImage = "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('science fiction') ||
+              book.title?.toLowerCase().includes('future')) {
+      coverImage = "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('business')) {
+      coverImage = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('philosophy') ||
+              book.title?.toLowerCase().includes('think')) {
+      coverImage = "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('romance')) {
+      coverImage = "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('mystery')) {
+      coverImage = "https://images.unsplash.com/photo-1587876931567-564ce588bfbd?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('fantasy')) {
+      coverImage = "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title?.toLowerCase().includes('data') ||
+              (book.genre && book.genre.toLowerCase().includes('technology'))) {
+      coverImage = "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('history')) {
+      coverImage = "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('psychology')) {
+      coverImage = "https://images.unsplash.com/photo-1576671414121-aa0c81c869e1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('adventure')) {
+      coverImage = "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.genre && book.genre.toLowerCase().includes('self-help')) {
+      coverImage = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    } else if (book.title?.toLowerCase().includes('art') ||
+              (book.genre && book.genre.toLowerCase().includes('art'))) {
+      coverImage = "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+    }
+    
+    return coverImage;
   };
 
   // Update an existing book
