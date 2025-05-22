@@ -16,9 +16,8 @@ const ManageUsersPage: React.FC = () => {
 
   useEffect(() => {
     if (user?.role === 'admin') {
-      // Fetch users when component mounts
-      const fetchedUsers = getAllUsers();
-      setUsers(fetchedUsers);
+      // Fetch users when component mounts and set loading to false after data is loaded
+      setUsers(getAllUsers());
       setIsLoading(false);
     }
   }, [user, getAllUsers]);

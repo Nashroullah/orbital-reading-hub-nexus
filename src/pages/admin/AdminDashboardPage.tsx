@@ -5,10 +5,12 @@ import { useLibrary } from "@/contexts/LibraryContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartLegend, ChartTooltip } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { useUserActivity } from "@/hooks/useUserActivity";
 
 const AdminDashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const { books, borrowedBooks, getUserActivities, reviews, feedback } = useLibrary();
+  const { books, borrowedBooks, reviews, feedback } = useLibrary();
+  const { userActivities } = useUserActivity();
   
   if (user?.role !== 'admin') {
     return (
@@ -36,8 +38,7 @@ const AdminDashboardPage: React.FC = () => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 5);
   
-  // Calculate user activity
-  const userActivities = getUserActivities();
+  // Calculate user activity - get all activities directly
   const totalReadingTime = userActivities.reduce((total, activity) => total + activity.timeSpent, 0);
   
   // Book status data for pie chart
