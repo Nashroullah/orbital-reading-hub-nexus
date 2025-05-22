@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { getBookCoverByMetadata } from '@/utils/bookUtils';
 
 const MyBooksPage: React.FC = () => {
   const { getUserBorrowedBooks, getBook, returnBook } = useLibrary();
@@ -15,49 +16,6 @@ const MyBooksPage: React.FC = () => {
   const borrowedBooks = getUserBorrowedBooks();
   const currentlyBorrowed = borrowedBooks.filter(b => !b.returnDate);
   const borrowingHistory = borrowedBooks.filter(b => b.returnDate);
-
-  // Helper function to get a professional cover based on the book title/author/genre
-  const getBookCoverByMetadata = (book) => {
-    // Mapping genres to appropriate cover styles
-    if (!book) return "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    
-    if (book.title.toLowerCase().includes('javascript') || 
-        book.genre.toLowerCase().includes('programming')) {
-      return "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.title.toLowerCase().includes('design') ||
-              book.genre.toLowerCase().includes('design')) {
-      return "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('science fiction') ||
-              book.title.toLowerCase().includes('future')) {
-      return "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('business')) {
-      return "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('philosophy') ||
-              book.title.toLowerCase().includes('think')) {
-      return "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('romance')) {
-      return "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('mystery')) {
-      return "https://images.unsplash.com/photo-1587876931567-564ce588bfbd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('fantasy')) {
-      return "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.title.toLowerCase().includes('data') ||
-              book.genre.toLowerCase().includes('technology')) {
-      return "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('history')) {
-      return "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('adventure')) {
-      return "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.genre.toLowerCase().includes('self-help')) {
-      return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else if (book.title.toLowerCase().includes('art') ||
-              book.genre.toLowerCase().includes('art')) {
-      return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    } else {
-      // Default cover for other genres
-      return "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-    }
-  };
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4">
