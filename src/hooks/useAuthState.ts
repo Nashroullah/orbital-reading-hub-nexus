@@ -2,8 +2,37 @@
 import { useState, useEffect } from 'react';
 import { User, UserRole } from '@/types/auth';
 
-// Empty users array - removing all mock accounts
-const mockUsers: User[] = [];
+// Add some sample users for demo purposes
+const mockUsers: User[] = [
+  {
+    id: '1',
+    name: 'Admin User',
+    email: 'admin@example.com',
+    role: 'admin',
+    profileImage: '/placeholder.svg',
+  },
+  {
+    id: '2',
+    name: 'Faculty User',
+    email: 'faculty@example.com',
+    role: 'faculty',
+    profileImage: '/placeholder.svg',
+  },
+  {
+    id: '3',
+    name: 'Student User',
+    email: 'student@example.com',
+    role: 'student',
+    profileImage: '/placeholder.svg',
+  },
+  {
+    id: '4',
+    name: 'Test User',
+    email: 'test@example.com',
+    role: 'student',
+    profileImage: '/placeholder.svg',
+  }
+];
 
 export interface AuthState {
   user: User | null;

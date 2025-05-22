@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -7,10 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { UserRole } from "@/types/auth";
+import { Loader2 } from "lucide-react";
 
 const ManageUsersPage: React.FC = () => {
   const { user, getAllUsers, updateUserRole } = useAuth();
-  const [users, setUsers] = useState<any[]>(getAllUsers());
+  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      // Fetch users when component mounts
+      const fetchedUsers = getAllUsers();
+      setUsers(fetchedUsers);
+      setIsLoading(false);
+    }
+  }, [user, getAllUsers]);
 
   if (user?.role !== 'admin') {
     return (
@@ -50,51 +61,62 @@ const ManageUsersPage: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-medium">Users</h2>
+          <h2 className="text-xl font-medium">Users ({users.length})</h2>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map(user => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge className={getRoleBadgeColor(user.role)}>
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      {user.role !== 'admin' && (
-                        <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'admin')}>
-                          Make Admin
-                        </Button>
-                      )}
-                      {user.role !== 'faculty' && (
-                        <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'faculty')}>
-                          Make Faculty
-                        </Button>
-                      )}
-                      {user.role !== 'student' && (
-                        <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'student')}>
-                          Make Student
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2">Loading users...</span>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No registered users found.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map(user => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge className={getRoleBadgeColor(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        {user.role !== 'admin' && (
+                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'admin')}>
+                            Make Admin
+                          </Button>
+                        )}
+                        {user.role !== 'faculty' && (
+                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'faculty')}>
+                            Make Faculty
+                          </Button>
+                        )}
+                        {user.role !== 'student' && (
+                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'student')}>
+                            Make Student
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
