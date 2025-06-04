@@ -1,29 +1,95 @@
 import { Book } from "../types/library";
 
-// Helper function to get a book cover based on metadata with more diverse and appropriate images
+// Real book cover images for popular titles
+const REAL_BOOK_COVERS: Record<string, string> = {
+  // Science Fiction Classics
+  "dune": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1555447414i/44767458.jpg",
+  "foundation": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1417900846i/29579.jpg",
+  "neuromancer": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1554437249i/22328.jpg",
+  "ender's game": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1408303130i/375802.jpg",
+  "the martian": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1413706054i/18007564.jpg",
+  "1984": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1657781256i/61439040.jpg",
+  "brave new world": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1575509280i/5129.jpg",
+  
+  // Fantasy Classics
+  "the hobbit": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546071216i/5907.jpg",
+  "the lord of the rings": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1566425108i/33.jpg",
+  "game of thrones": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436732693i/13496.jpg",
+  "harry potter": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/3.jpg",
+  "the name of the wind": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1270352123i/186074.jpg",
+  
+  // Programming Books
+  "clean code": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436202607i/3735293.jpg",
+  "the pragmatic programmer": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1401432508i/4099.jpg",
+  "design patterns": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1348027904i/85009.jpg",
+  "javascript": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1328834793i/2998152.jpg",
+  "you don't know js": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1434591042i/25662102.jpg",
+  
+  // Business & Self-Help
+  "atomic habits": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1535115320i/40121378.jpg",
+  "thinking fast and slow": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1317793965i/11468377.jpg",
+  "sapiens": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1420585954i/23692271.jpg",
+  "the lean startup": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1333576876i/10127019.jpg",
+  "good to great": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
+  
+  // Literature Classics
+  "to kill a mockingbird": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1553383690i/2657.jpg",
+  "pride and prejudice": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1320399351i/1885.jpg",
+  "the great gatsby": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1490528560i/4671.jpg",
+  "of mice and men": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1511302904i/890.jpg",
+  
+  // Mystery & Thriller
+  "gone girl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1554086139i/19288043.jpg",
+  "the girl with the dragon tattoo": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1327868566i/2429135.jpg",
+  "sherlock holmes": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1164045516i/102868.jpg",
+  
+  // Romance
+  "the notebook": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1483183484i/15931.jpg",
+  "outlander": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1529065012i/10964.jpg",
+  
+  // History & Biography
+  "becoming": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1528206996i/38746485.jpg",
+  "educated": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg",
+  "steve jobs": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1511288482i/11084145.jpg"
+};
+
+// Helper function to get a book cover based on metadata with real book covers
 export const getBookCoverByMetadata = (book: Partial<Book>): string => {
+  // First, try to match exact book titles with real covers
+  if (book.title) {
+    const normalizedTitle = book.title.toLowerCase().trim();
+    
+    // Check for exact matches or partial matches
+    for (const [bookKey, coverUrl] of Object.entries(REAL_BOOK_COVERS)) {
+      if (normalizedTitle.includes(bookKey) || bookKey.includes(normalizedTitle)) {
+        return coverUrl;
+      }
+    }
+    
+    // Check for common programming book patterns
+    if (normalizedTitle.includes('javascript') && normalizedTitle.includes('definitive')) {
+      return "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1328834793i/2998152.jpg";
+    }
+    if (normalizedTitle.includes('react') && normalizedTitle.includes('up')) {
+      return "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg";
+    }
+  }
+
+  // If no exact match found, use genre-based or author-based realistic book covers
+  
   // Programming and Technology books
   if (book.title?.toLowerCase().includes('javascript') || 
       book.title?.toLowerCase().includes('programming') ||
       book.title?.toLowerCase().includes('code') ||
       (book.genre && book.genre.toLowerCase().includes('programming'))) {
     const programmingCovers = [
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436202607i/3735293.jpg", // Clean Code
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1401432508i/4099.jpg", // Pragmatic Programmer
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1348027904i/85009.jpg", // Design Patterns
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1328834793i/2998152.jpg", // JavaScript: The Definitive Guide
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1434591042i/25662102.jpg" // You Don't Know JS
     ];
     return programmingCovers[Math.floor(Math.random() * programmingCovers.length)];
-  }
-
-  // Design books
-  if (book.title?.toLowerCase().includes('design') ||
-      (book.genre && book.genre.toLowerCase().includes('design'))) {
-    const designCovers = [
-      "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return designCovers[Math.floor(Math.random() * designCovers.length)];
   }
 
   // Science Fiction
@@ -31,40 +97,47 @@ export const getBookCoverByMetadata = (book: Partial<Book>): string => {
       book.title?.toLowerCase().includes('future') ||
       book.title?.toLowerCase().includes('space'))) {
     const sciFiCovers = [
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1555447414i/44767458.jpg", // Dune
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1417900846i/29579.jpg", // Foundation
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1554437249i/22328.jpg", // Neuromancer
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1408303130i/375802.jpg", // Ender's Game
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1657781256i/61439040.jpg" // 1984
     ];
     return sciFiCovers[Math.floor(Math.random() * sciFiCovers.length)];
+  }
+
+  // Fantasy books
+  if (book.genre && book.genre.toLowerCase().includes('fantasy')) {
+    const fantasyCovers = [
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546071216i/5907.jpg", // The Hobbit
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1566425108i/33.jpg", // LOTR
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436732693i/13496.jpg", // Game of Thrones
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/3.jpg", // Harry Potter
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1270352123i/186074.jpg" // Name of the Wind
+    ];
+    return fantasyCovers[Math.floor(Math.random() * fantasyCovers.length)];
   }
 
   // Business books
   if (book.genre && book.genre.toLowerCase().includes('business')) {
     const businessCovers = [
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1333576876i/10127019.jpg", // Lean Startup
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg", // Good to Great
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1511288482i/11084145.jpg", // Steve Jobs
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1535115320i/40121378.jpg", // Atomic Habits
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1317793965i/11468377.jpg" // Thinking Fast and Slow
     ];
     return businessCovers[Math.floor(Math.random() * businessCovers.length)];
-  }
-
-  // Philosophy books
-  if (book.genre && (book.genre.toLowerCase().includes('philosophy') ||
-      book.title?.toLowerCase().includes('think'))) {
-    const philosophyCovers = [
-      "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return philosophyCovers[Math.floor(Math.random() * philosophyCovers.length)];
   }
 
   // Romance books
   if (book.genre && book.genre.toLowerCase().includes('romance')) {
     const romanceCovers = [
-      "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1518621012360-8da2a34fd87b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1483183484i/15931.jpg", // The Notebook
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1529065012i/10964.jpg", // Outlander
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1320399351i/1885.jpg", // Pride and Prejudice
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1490528560i/4671.jpg", // The Great Gatsby
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474745374i/2767052.jpg" // Me Before You
     ];
     return romanceCovers[Math.floor(Math.random() * romanceCovers.length)];
   }
@@ -72,102 +145,59 @@ export const getBookCoverByMetadata = (book: Partial<Book>): string => {
   // Mystery books
   if (book.genre && book.genre.toLowerCase().includes('mystery')) {
     const mysteryCovers = [
-      "https://images.unsplash.com/photo-1587876931567-564ce588bfbd?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1574275564017-1a4da8c26f15?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1554086139i/19288043.jpg", // Gone Girl
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1327868566i/2429135.jpg", // Girl with Dragon Tattoo
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1164045516i/102868.jpg", // Sherlock Holmes
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1415298607i/18693426.jpg", // Big Little Lies
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1378224146i/6317.jpg" // The Maltese Falcon
     ];
     return mysteryCovers[Math.floor(Math.random() * mysteryCovers.length)];
   }
 
-  // Fantasy books
-  if (book.genre && book.genre.toLowerCase().includes('fantasy')) {
-    const fantasyCovers = [
-      "https://images.unsplash.com/photo-1618944847828-82e943c3bdb7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1514539079130-25950c84af65?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  // Philosophy books
+  if (book.genre && (book.genre.toLowerCase().includes('philosophy') ||
+      book.title?.toLowerCase().includes('think'))) {
+    const philosophyCovers = [
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1317793965i/11468377.jpg", // Thinking Fast and Slow
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1420585954i/23692271.jpg", // Sapiens
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1348209843i/4865.jpg", // The Republic
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1320562005i/51152.jpg", // Meditations
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1266963025i/6969.jpg" // The Stranger
     ];
-    return fantasyCovers[Math.floor(Math.random() * fantasyCovers.length)];
-  }
-
-  // Data/Technology books
-  if (book.title?.toLowerCase().includes('data') ||
-      (book.genre && book.genre.toLowerCase().includes('technology'))) {
-    const techCovers = [
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return techCovers[Math.floor(Math.random() * techCovers.length)];
-  }
-
-  // History books
-  if (book.genre && book.genre.toLowerCase().includes('history')) {
-    const historyCovers = [
-      "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1568667256549-094345857637?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return historyCovers[Math.floor(Math.random() * historyCovers.length)];
-  }
-
-  // Psychology books
-  if (book.genre && book.genre.toLowerCase().includes('psychology')) {
-    const psychologyCovers = [
-      "https://images.unsplash.com/photo-1576671414121-aa0c81c869e1?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1472746041811-4fee3ee7ee80?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return psychologyCovers[Math.floor(Math.random() * psychologyCovers.length)];
-  }
-
-  // Adventure books
-  if (book.genre && book.genre.toLowerCase().includes('adventure')) {
-    const adventureCovers = [
-      "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return adventureCovers[Math.floor(Math.random() * adventureCovers.length)];
+    return philosophyCovers[Math.floor(Math.random() * philosophyCovers.length)];
   }
 
   // Self-help books
   if (book.genre && book.genre.toLowerCase().includes('self-help')) {
     const selfHelpCovers = [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1535115320i/40121378.jpg", // Atomic Habits
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1528206996i/38746485.jpg", // Becoming
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg", // Educated
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1344266315i/4069.jpg", // The 7 Habits
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1442726934i/4588.jpg" // The Power of Now
     ];
     return selfHelpCovers[Math.floor(Math.random() * selfHelpCovers.length)];
   }
 
-  // Art books
-  if (book.title?.toLowerCase().includes('art') ||
-      (book.genre && book.genre.toLowerCase().includes('art'))) {
-    const artCovers = [
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+  // History books
+  if (book.genre && book.genre.toLowerCase().includes('history')) {
+    const historyCovers = [
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1420585954i/23692271.jpg", // Sapiens
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1528206996i/38746485.jpg", // Becoming
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1327144697i/1202.jpg", // A People's History
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1348151864i/11107.jpg", // The Guns of August
+      "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1327738086i/1069006.jpg" // Band of Brothers
     ];
-    return artCovers[Math.floor(Math.random() * artCovers.length)];
+    return historyCovers[Math.floor(Math.random() * historyCovers.length)];
   }
 
-  // Science books
-  if (book.genre && book.genre.toLowerCase().includes('science')) {
-    const scienceCovers = [
-      "https://images.unsplash.com/photo-1566345984367-8efca0503855?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
-    ];
-    return scienceCovers[Math.floor(Math.random() * scienceCovers.length)];
-  }
-
-  // Default covers for general books
+  // Default covers for general books - using classic literature covers
   const defaultCovers = [
-    "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+    "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1553383690i/2657.jpg", // To Kill a Mockingbird
+    "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1320399351i/1885.jpg", // Pride and Prejudice
+    "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1490528560i/4671.jpg", // The Great Gatsby
+    "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1511302904i/890.jpg", // Of Mice and Men
+    "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1327144697i/1202.jpg" // A People's History
   ];
   
   return defaultCovers[Math.floor(Math.random() * defaultCovers.length)];
