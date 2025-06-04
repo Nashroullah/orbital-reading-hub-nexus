@@ -13,6 +13,7 @@ const REAL_BOOK_COVERS: Record<string, string> = {
   
   // Fantasy Classics
   "the hobbit": "https://m.media-amazon.com/images/I/71jD4jMityL._AC_UF1000,1000_QL80_.jpg",
+  "hobbit": "https://m.media-amazon.com/images/I/71jD4jMityL._AC_UF1000,1000_QL80_.jpg",
   "the lord of the rings": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1566425108i/33.jpg",
   "game of thrones": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436732693i/13496.jpg",
   "harry potter": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1474154022i/3.jpg",

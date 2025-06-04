@@ -13,7 +13,15 @@ export const useBooks = () => {
   useEffect(() => {
     // Load books from localStorage if available
     const storedBooks = localStorage.getItem('books');
-    setBooks(storedBooks ? JSON.parse(storedBooks) : generateMockBooks());
+    let loadedBooks = storedBooks ? JSON.parse(storedBooks) : generateMockBooks();
+    
+    // Update book covers with real images
+    loadedBooks = loadedBooks.map((book: Book) => ({
+      ...book,
+      coverImage: getBookCoverByMetadata(book)
+    }));
+    
+    setBooks(loadedBooks);
   }, []);
   
   // Save books to localStorage when it changes
