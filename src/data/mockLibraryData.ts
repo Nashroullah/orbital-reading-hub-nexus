@@ -291,7 +291,7 @@ export const generateMockBooks = (): Book[] => [
     id: '20',
     title: 'The Girl on the Train',
     author: 'Paula Hawkins',
-    coverImage: 'https://books.google.co.in/books/publisher/content?id=p2SOBAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0Jif9Km2jDPW0AahFyAlSLAYv6jA&w=1280',
+    coverImage: 'https://images.unsplash.com/photo-1614332287897-cdc485fa562d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
     genre: 'Thriller',
     description: 'A psychological thriller about a divorced alcoholic who becomes entangled in a missing person investigation.',
     isbn: '978-1594634024',

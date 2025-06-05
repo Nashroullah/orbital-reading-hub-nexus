@@ -52,33 +52,9 @@ export const getBookCoverByMetadata = (book: Partial<Book>): string => {
       return REAL_BOOK_COVERS[normalizedTitle];
     }
     
-    // Check for partial matches - handle variations in titles
+    // Check for partial matches
     for (const [bookKey, coverUrl] of Object.entries(REAL_BOOK_COVERS)) {
-      // Check if the book title contains the key or vice versa
       if (normalizedTitle.includes(bookKey) || bookKey.includes(normalizedTitle.split(':')[0])) {
-        return coverUrl;
-      }
-      
-      // Special handling for common variations
-      if (normalizedTitle.includes("python crash course") && bookKey === "python crash course") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("four agreements") && bookKey === "the four agreements") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("seven husbands") && bookKey === "the seven husbands of evelyn hugo") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("react: up") && bookKey === "react: up & running") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("girl on the train") && bookKey === "the girl on the train") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("silent patient") && bookKey === "the silent patient") {
-        return coverUrl;
-      }
-      if (normalizedTitle.includes("cosmos") && bookKey === "cosmos") {
         return coverUrl;
       }
     }

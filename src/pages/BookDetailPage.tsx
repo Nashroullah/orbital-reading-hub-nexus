@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLibrary } from '@/contexts/LibraryContext';
@@ -7,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Star, BookCopy, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { getBookCoverByMetadata } from '@/utils/bookUtils';
 
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,14 +42,7 @@ const BookDetailPage: React.FC = () => {
     setImageError(true);
   };
 
-  // Get fresh cover image using the utility function
-  const freshCoverImage = getBookCoverByMetadata(book);
   const fallbackImage = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
-  
-  // Use fresh cover image or fallback to the book's stored cover
-  const displayCoverImage = freshCoverImage || book.coverImage;
-  
-  console.log(`BookDetailPage - Title: "${book.title}" | Cover: ${displayCoverImage}`);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
@@ -63,7 +56,7 @@ const BookDetailPage: React.FC = () => {
         <div className="md:col-span-1">
           <AspectRatio ratio={2/3} className="rounded-lg overflow-hidden shadow-lg mb-6">
             <img 
-              src={imageError ? fallbackImage : displayCoverImage} 
+              src={imageError ? fallbackImage : book.coverImage} 
               alt={`Cover of ${book.title}`} 
               className="w-full h-full object-cover"
               onError={handleImageError}
