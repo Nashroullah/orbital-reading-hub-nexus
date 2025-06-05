@@ -28,13 +28,17 @@ export const useBooks = () => {
       }
     }
     
-    // Update book covers with real images
-    loadedBooks = loadedBooks.map((book: Book) => ({
-      ...book,
-      coverImage: getBookCoverByMetadata(book)
-    }));
+    // Update book covers with real images - force refresh every time
+    loadedBooks = loadedBooks.map((book: Book) => {
+      const updatedCoverImage = getBookCoverByMetadata(book);
+      console.log(`Updating cover for "${book.title}" to: ${updatedCoverImage}`);
+      return {
+        ...book,
+        coverImage: updatedCoverImage
+      };
+    });
     
-    console.log(`Loaded ${loadedBooks.length} books`);
+    console.log(`Loaded ${loadedBooks.length} books with updated covers`);
     setBooks(loadedBooks);
   }, []);
   
