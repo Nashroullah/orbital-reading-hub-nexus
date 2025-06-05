@@ -11,9 +11,22 @@ export const useBooks = () => {
   const [books, setBooks] = useState<Book[]>([]);
   
   useEffect(() => {
-    // Load books from localStorage if available
+    // Always load fresh mock data to ensure new books appear
+    let loadedBooks = generateMockBooks();
+    
+    // Check if we have any custom books in localStorage
     const storedBooks = localStorage.getItem('books');
-    let loadedBooks = storedBooks ? JSON.parse(storedBooks) : generateMockBooks();
+    if (storedBooks) {
+      try {
+        const parsedStoredBooks = JSON.parse(storedBooks);
+        // Only use stored books if they have the same length or more (indicating user additions)
+        if (parsedStoredBooks.length >= loadedBooks.length) {
+          loadedBooks = parsedStoredBooks;
+        }
+      } catch (error) {
+        console.log('Error parsing stored books, using fresh data');
+      }
+    }
     
     // Update book covers with real images
     loadedBooks = loadedBooks.map((book: Book) => ({
@@ -21,12 +34,15 @@ export const useBooks = () => {
       coverImage: getBookCoverByMetadata(book)
     }));
     
+    console.log(`Loaded ${loadedBooks.length} books`);
     setBooks(loadedBooks);
   }, []);
   
   // Save books to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('books', JSON.stringify(books));
+    if (books.length > 0) {
+      localStorage.setItem('books', JSON.stringify(books));
+    }
   }, [books]);
   
   // Get book by ID
