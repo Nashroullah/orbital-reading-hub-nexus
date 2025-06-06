@@ -1,3 +1,4 @@
+
 import { Book } from "../types/library";
 
 // Real book cover images for popular titles with better matching
@@ -14,7 +15,7 @@ const REAL_BOOK_COVERS: Record<string, string> = {
   "a brief history of time": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1333578746i/3869.jpg",
   "the alchemist": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg",
   "sapiens: a brief history of humankind": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1420585954i/23692271.jpg",
-  "the silent patient": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582398742i/40097951.jpg",
+  "the silent patient": "https://books.google.co.in/books/publisher/content?id=a6NnDwAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0sd_ARiItXsE4NzgkoT7C5xKacag&w=1280",
   "atomic habits": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1535115320i/40121378.jpg",
   "educated": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg",
   "the midnight library": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190253i/52578297.jpg",
