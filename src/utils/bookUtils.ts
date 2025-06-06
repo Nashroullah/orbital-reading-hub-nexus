@@ -1,4 +1,5 @@
 
+
 import { Book } from "../types/library";
 
 // Real book cover images for popular titles with better matching
@@ -23,22 +24,22 @@ const REAL_BOOK_COVERS: Record<string, string> = {
   "the catcher in the rye": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1398034300i/5107.jpg",
   "the da vinci code": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1579621267i/968.jpg",
   "think and grow rich": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1463241782i/30186948.jpg",
-  "the girl on the train": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1574530532i/22557272.jpg",
+  "the girl on the train": "https://books.google.co.in/books/publisher/content?id=p2SOBAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0Jif9Km2jDPW0AahFyAlSLAYv6jA&w=1280",
   "thinking, fast and slow": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1317793965i/11468377.jpg",
   "the pragmatic programmer": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1401432508i/4099.jpg",
   "the art of war": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1453417993i/10534.jpg",
   "clean code": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436202607i/3735293.jpg",
   "the design of everyday things": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1442460745i/840.jpg",
-  "cosmos": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1481256651i/61663.jpg",
+  "cosmos": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQwIkfr6dkffSWOTFhD6nnP0o9CnDaOxfjo4wyZa7dzhSvSz2hC",
   "javascript: the definitive guide": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1328834793i/2998152.jpg",
   "the handmaid's tale": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1578028274i/38447.jpg",
   "where the crawdads sing": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582135294i/36809135.jpg",
   "becoming": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1528206996i/38746485.jpg",
-  "react: up & running": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1468096738i/26738168.jpg",
-  "the seven husbands of evelyn hugo": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1521739808i/32620332.jpg",
-  "the four agreements": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1440935644i/6596.jpg",
+  "react: up & running": "https://books.google.co.in/books/publisher/content?id=t54LEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2Df5WBXgV_Hr7I9Hhxx5TUA1mC_w&w=1280",
+  "the seven husbands of evelyn hugo": "https://books.google.co.in/books/publisher/content?id=cPlBEAAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3lt4G1ExGXAdsVLEYKrNX_-ItGWg&w=1280",
+  "the four agreements": "https://books.google.co.in/books/publisher/content?id=t54LEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2Df5WBXgV_Hr7I9Hhxx5TUA1mC_w&w=1280",
   "the kite runner": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1579036753i/77203.jpg",
-  "python crash course": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1557128449i/23241059.jpg",
+  "python crash course": "https://books.google.co.in/books/publisher/content?id=qD1wEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3uFVvFrkmE1BNqPdbY3ifuzwAK8Q&w=1280",
   "the book thief": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1522157426i/19063.jpg"
 };
 
