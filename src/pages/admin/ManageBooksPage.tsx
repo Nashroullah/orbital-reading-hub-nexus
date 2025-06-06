@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Book } from "@/contexts/LibraryContext";
+import { Plus, Minus } from "lucide-react";
 
 const ManageBooksPage: React.FC = () => {
   const { user } = useAuth();
@@ -19,7 +20,9 @@ const ManageBooksPage: React.FC = () => {
   
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [copyAmount, setCopyAmount] = useState<number>(1);
   
   const [newBook, setNewBook] = useState<Partial<Book>>({
     title: "",
@@ -85,13 +88,79 @@ const ManageBooksPage: React.FC = () => {
     }
   };
 
+  const handleIncreaseCopies = (book: Book) => {
+    const updatedBook = {
+      ...book,
+      totalCopies: book.totalCopies + 1,
+      availableCopies: book.availableCopies + 1
+    };
+    
+    try {
+      updateBook(book.id, updatedBook);
+      setBooksList(books);
+      toast.success(`Added 1 copy of "${book.title}"`);
+    } catch (error) {
+      toast.error("Error increasing copies");
+    }
+  };
+
+  const handleDecreaseCopies = (book: Book) => {
+    if (book.totalCopies <= 1) {
+      toast.error("Cannot decrease below 1 copy");
+      return;
+    }
+    
+    if (book.availableCopies <= 0) {
+      toast.error("Cannot decrease copies when no copies are available");
+      return;
+    }
+    
+    const updatedBook = {
+      ...book,
+      totalCopies: book.totalCopies - 1,
+      availableCopies: book.availableCopies - 1
+    };
+    
+    try {
+      updateBook(book.id, updatedBook);
+      setBooksList(books);
+      toast.success(`Removed 1 copy of "${book.title}"`);
+    } catch (error) {
+      toast.error("Error decreasing copies");
+    }
+  };
+
+  const handleBulkCopyUpdate = () => {
+    if (!selectedBook || copyAmount < 1) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    const updatedBook = {
+      ...selectedBook,
+      totalCopies: selectedBook.totalCopies + copyAmount,
+      availableCopies: selectedBook.availableCopies + copyAmount
+    };
+    
+    try {
+      updateBook(selectedBook.id, updatedBook);
+      setBooksList(books);
+      setIsCopyDialogOpen(false);
+      toast.success(`Added ${copyAmount} copies of "${selectedBook.title}"`);
+      setSelectedBook(null);
+      setCopyAmount(1);
+    } catch (error) {
+      toast.error("Error updating copies");
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-serif font-bold mb-2">Manage Books</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Add, edit, and remove books from the library
+            Add, edit, and manage book copies in the library
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -260,6 +329,33 @@ const ManageBooksPage: React.FC = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={isCopyDialogOpen} onOpenChange={setIsCopyDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Copies</DialogTitle>
+              <DialogDescription>
+                Add multiple copies of "{selectedBook?.title}" to the library.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="copy-amount">Number of copies to add</Label>
+                <Input
+                  id="copy-amount"
+                  type="number"
+                  min="1"
+                  value={copyAmount}
+                  onChange={(e) => setCopyAmount(Number(e.target.value))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsCopyDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleBulkCopyUpdate}>Add Copies</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
@@ -274,6 +370,7 @@ const ManageBooksPage: React.FC = () => {
                 <TableHead>Author</TableHead>
                 <TableHead>Genre</TableHead>
                 <TableHead>Available / Total</TableHead>
+                <TableHead>Copy Management</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -284,6 +381,40 @@ const ManageBooksPage: React.FC = () => {
                   <TableCell>{book.author}</TableCell>
                   <TableCell>{book.genre}</TableCell>
                   <TableCell>{book.availableCopies} / {book.totalCopies}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDecreaseCopies(book)}
+                        disabled={book.totalCopies <= 1 || book.availableCopies <= 0}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm font-medium min-w-[3ch] text-center">
+                        {book.totalCopies}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleIncreaseCopies(book)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setSelectedBook(book);
+                          setIsCopyDialogOpen(true);
+                        }}
+                      >
+                        Bulk Add
+                      </Button>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button 
