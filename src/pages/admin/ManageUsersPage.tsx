@@ -1,22 +1,30 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLibrary } from "@/contexts/LibraryContext";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { UserRole } from "@/types/auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { format } from "date-fns";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const ManageUsersPage: React.FC = () => {
   const { user, getAllUsers, updateUserRole } = useAuth();
+  const { books, borrowedBooks, clearFine, getFineAmount } = useLibrary();
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (user?.role === 'admin') {
-      // Fetch users when component mounts and set loading to false after data is loaded
       setUsers(getAllUsers());
       setIsLoading(false);
     }
@@ -34,6 +42,30 @@ const ManageUsersPage: React.FC = () => {
     updateUserRole(userId, newRole);
     setUsers(getAllUsers());
     toast.success("User role updated successfully");
+  };
+
+  const handleClearFine = (borrowId: string) => {
+    clearFine(borrowId);
+    toast.success("Fine cleared successfully");
+  };
+
+  const toggleUserExpansion = (userId: string) => {
+    const newExpanded = new Set(expandedUsers);
+    if (newExpanded.has(userId)) {
+      newExpanded.delete(userId);
+    } else {
+      newExpanded.add(userId);
+    }
+    setExpandedUsers(newExpanded);
+  };
+
+  const getUserBorrowedBooks = (userId: string) => {
+    return borrowedBooks.filter(borrowed => borrowed.userId === userId);
+  };
+
+  const getBookTitle = (bookId: string) => {
+    const book = books.find(b => b.id === bookId);
+    return book ? book.title : 'Unknown Book';
   };
 
   const getRoleBadgeColor = (role: string) => {
@@ -54,7 +86,7 @@ const ManageUsersPage: React.FC = () => {
       <div>
         <h1 className="text-3xl font-serif font-bold mb-2">Manage Users</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          View and manage user accounts
+          View and manage user accounts and their borrowing activity
         </p>
       </div>
 
@@ -73,48 +105,136 @@ const ManageUsersPage: React.FC = () => {
               No registered users found.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map(user => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge className={getRoleBadgeColor(user.role)}>
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        {user.role !== 'admin' && (
-                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'admin')}>
-                            Make Admin
-                          </Button>
-                        )}
-                        {user.role !== 'faculty' && (
-                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'faculty')}>
-                            Make Faculty
-                          </Button>
-                        )}
-                        {user.role !== 'student' && (
-                          <Button size="sm" onClick={() => handleRoleUpdate(user.id, 'student')}>
-                            Make Student
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="space-y-4">
+              {users.map(currentUser => {
+                const userBorrowedBooks = getUserBorrowedBooks(currentUser.id);
+                const isExpanded = expandedUsers.has(currentUser.id);
+                
+                return (
+                  <Collapsible key={currentUser.id}>
+                    <Card className="border">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div>
+                              <h3 className="font-medium">{currentUser.name}</h3>
+                              <p className="text-sm text-gray-500">{currentUser.email}</p>
+                            </div>
+                            <Badge className={getRoleBadgeColor(currentUser.role)}>
+                              {currentUser.role}
+                            </Badge>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-500">
+                              {userBorrowedBooks.length} book(s) borrowed
+                            </span>
+                            
+                            <CollapsibleTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleUserExpansion(currentUser.id)}
+                              >
+                                {isExpanded ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                                {isExpanded ? 'Hide' : 'View'} Books
+                              </Button>
+                            </CollapsibleTrigger>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4 flex space-x-2">
+                          {currentUser.role !== 'admin' && (
+                            <Button size="sm" onClick={() => handleRoleUpdate(currentUser.id, 'admin')}>
+                              Make Admin
+                            </Button>
+                          )}
+                          {currentUser.role !== 'faculty' && (
+                            <Button size="sm" onClick={() => handleRoleUpdate(currentUser.id, 'faculty')}>
+                              Make Faculty
+                            </Button>
+                          )}
+                          {currentUser.role !== 'student' && (
+                            <Button size="sm" onClick={() => handleRoleUpdate(currentUser.id, 'student')}>
+                              Make Student
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                      
+                      <CollapsibleContent>
+                        <CardContent className="pt-0">
+                          <div className="border-t pt-4">
+                            <h4 className="font-medium mb-3">Borrowed Books</h4>
+                            {userBorrowedBooks.length === 0 ? (
+                              <p className="text-gray-500 text-sm">No books currently borrowed</p>
+                            ) : (
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Book Title</TableHead>
+                                    <TableHead>Borrow Date</TableHead>
+                                    <TableHead>Due Date</TableHead>
+                                    <TableHead>Return Date</TableHead>
+                                    <TableHead>Fine</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {userBorrowedBooks.map(borrowed => {
+                                    const fine = getFineAmount(borrowed.id);
+                                    return (
+                                      <TableRow key={borrowed.id}>
+                                        <TableCell>{getBookTitle(borrowed.bookId)}</TableCell>
+                                        <TableCell>
+                                          {format(new Date(borrowed.borrowDate), 'PPP')}
+                                        </TableCell>
+                                        <TableCell>
+                                          {format(new Date(borrowed.dueDate), 'PPP')}
+                                        </TableCell>
+                                        <TableCell>
+                                          {borrowed.returnDate ? (
+                                            format(new Date(borrowed.returnDate), 'PPP')
+                                          ) : (
+                                            <Badge variant="outline">Not Returned</Badge>
+                                          )}
+                                        </TableCell>
+                                        <TableCell>
+                                          {fine > 0 ? (
+                                            <Badge variant="destructive">Rs{fine}</Badge>
+                                          ) : (
+                                            <Badge variant="outline">No Fine</Badge>
+                                          )}
+                                        </TableCell>
+                                        <TableCell>
+                                          {fine > 0 && (
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              onClick={() => handleClearFine(borrowed.id)}
+                                            >
+                                              Clear Fine
+                                            </Button>
+                                          )}
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })}
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        </CardContent>
+                      </CollapsibleContent>
+                    </Card>
+                  </Collapsible>
+                );
+              })}
+            </div>
           )}
         </CardContent>
       </Card>
