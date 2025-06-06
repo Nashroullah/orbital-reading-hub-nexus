@@ -4,15 +4,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLibrary } from '@/contexts/LibraryContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookCopy, Clock, Calendar, FileMinus, BookOpen, User, Star, Settings, FileText, MessageSquare } from 'lucide-react';
+import { BookCopy, Clock, Calendar, FileMinus, BookOpen, User, Star, Settings, FileText, MessageSquare, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { format, parseISO } from 'date-fns';
+import { toast } from '@/components/ui/sonner';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const { getPopularBooks, getUserBorrowedBooks, getFineAmount, getUserActivities } = useLibrary();
+  const { getPopularBooks, getUserBorrowedBooks, getFineAmount, getUserActivities, getBook, clearFine } = useLibrary();
 
   if (!user) {
     return null; // Should be handled by the Layout component
@@ -24,8 +27,13 @@ const DashboardPage: React.FC = () => {
   const borrowedBooks = getUserBorrowedBooks();
   const currentlyBorrowed = borrowedBooks.filter(b => !b.returnDate);
   
-  // Calculate total fines
-  const totalFines = borrowedBooks.reduce((sum, book) => {
+  // Calculate total fines and get books with fines
+  const booksWithFines = borrowedBooks.filter(book => {
+    const fine = getFineAmount(book.id);
+    return fine > 0;
+  });
+  
+  const totalFines = booksWithFines.reduce((sum, book) => {
     return sum + getFineAmount(book.id);
   }, 0);
 
@@ -75,6 +83,12 @@ const DashboardPage: React.FC = () => {
       // Default cover for other genres
       return "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
     }
+  };
+
+  const handlePayFine = (borrowId: string) => {
+    // Simulate payment process
+    toast.success("Fine payment successful! Thank you.");
+    clearFine(borrowId);
   };
 
   return (
@@ -237,7 +251,7 @@ const DashboardPage: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Fines
+              Outstanding Fines
             </CardTitle>
             <FileMinus className="h-5 w-5 text-red-500" />
           </CardHeader>
@@ -249,6 +263,80 @@ const DashboardPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Fine Payment Section */}
+      {booksWithFines.length > 0 && (
+        <Card className="border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-800">
+          <CardHeader>
+            <CardTitle className="text-red-700 dark:text-red-400 flex items-center">
+              <CreditCard className="h-5 w-5 mr-2" />
+              Outstanding Fines - Payment Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+                You have outstanding fines for late book returns. Fine is ₹2 per day after a 5-day grace period.
+              </p>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Book Title</TableHead>
+                    <TableHead>Due Date</TableHead>
+                    <TableHead>Days Overdue</TableHead>
+                    <TableHead>Fine Amount</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {booksWithFines.map((borrowedBook) => {
+                    const book = getBook(borrowedBook.bookId);
+                    const fine = getFineAmount(borrowedBook.id);
+                    const dueDate = parseISO(borrowedBook.dueDate);
+                    const today = new Date();
+                    const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                    
+                    if (!book || fine === 0) return null;
+                    
+                    return (
+                      <TableRow key={borrowedBook.id}>
+                        <TableCell className="font-medium">{book.title}</TableCell>
+                        <TableCell>{format(dueDate, 'MMM d, yyyy')}</TableCell>
+                        <TableCell>{daysOverdue} days</TableCell>
+                        <TableCell className="font-bold text-red-600">₹{fine.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handlePayFine(borrowedBook.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Pay Fine
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              
+              <div className="flex justify-between items-center pt-4 border-t">
+                <div className="text-lg font-semibold">
+                  Total Amount Due: <span className="text-red-600">₹{totalFines.toFixed(2)}</span>
+                </div>
+                <Button 
+                  onClick={() => {
+                    booksWithFines.forEach(book => handlePayFine(book.id));
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Pay All Fines
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Book Recommendations */}
       <div>

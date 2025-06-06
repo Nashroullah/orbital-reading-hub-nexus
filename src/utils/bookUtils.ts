@@ -1,5 +1,3 @@
-
-
 import { Book } from "../types/library";
 
 // Real book cover images for popular titles with better matching
@@ -35,7 +33,7 @@ const REAL_BOOK_COVERS: Record<string, string> = {
   "the handmaid's tale": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1578028274i/38447.jpg",
   "where the crawdads sing": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582135294i/36809135.jpg",
   "becoming": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1528206996i/38746485.jpg",
-  "react: up & running": "https://books.google.co.in/books/publisher/content?id=t54LEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2Df5WBXgV_Hr7I9Hhxx5TUA1mC_w&w=1280",
+  "react: up & running": "https://books.google.co.in/books/publisher/content?id=Z_xNEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2Mzc-FKPk2jRPulQFaDBj_DeNsVw&w=1280",
   "the seven husbands of evelyn hugo": "https://books.google.co.in/books/publisher/content?id=cPlBEAAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3lt4G1ExGXAdsVLEYKrNX_-ItGWg&w=1280",
   "the four agreements": "https://books.google.co.in/books/publisher/content?id=t54LEAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2Df5WBXgV_Hr7I9Hhxx5TUA1mC_w&w=1280",
   "the kite runner": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1579036753i/77203.jpg",
@@ -130,16 +128,17 @@ export const getBookCoverByMetadata = (book: Partial<Book>): string => {
   return defaultCovers[Math.floor(Math.random() * defaultCovers.length)];
 };
 
-// Calculate fine for overdue books
+// Calculate fine for overdue books - updated to Rs 2 per day after 5 days
 export const calculateFine = (dueDate: string, returnDate: string | null): number => {
   if (!returnDate) {
     // Check if the book is overdue
     const due = new Date(dueDate);
     const today = new Date();
     if (today > due) {
-      // Fine is Rs 1 per day
+      // Fine is Rs 2 per day after 5 days grace period
       const daysOverdue = Math.floor((today.getTime() - due.getTime()) / (1000 * 60 * 60 * 24));
-      return daysOverdue;
+      const fineableDays = Math.max(0, daysOverdue - 5);
+      return fineableDays * 2;
     }
     return 0;
   }
@@ -148,9 +147,10 @@ export const calculateFine = (dueDate: string, returnDate: string | null): numbe
   const returned = new Date(returnDate);
   
   if (returned > due) {
-    // Fine is Rs 1 per day
+    // Fine is Rs 2 per day after 5 days grace period
     const daysOverdue = Math.floor((returned.getTime() - due.getTime()) / (1000 * 60 * 60 * 24));
-    return daysOverdue;
+    const fineableDays = Math.max(0, daysOverdue - 5);
+    return fineableDays * 2;
   }
   
   return 0;
