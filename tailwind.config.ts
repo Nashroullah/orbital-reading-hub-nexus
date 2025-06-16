@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -85,7 +86,7 @@ export default {
 					darkpurple: '#3498DB', // Updated to Sky blue
 					purple: '#3498DB', // Updated to Sky blue
 					lightpurple: '#87CEFA', // Updated to Light sky blue
-					gold: '#87CEFA', // Updated to Light sky blue
+					gold: '#FFFFFF', // Updated to White
 					cream: '#F8FCFF' // Updated to Very light sky blue
 				}
 			},

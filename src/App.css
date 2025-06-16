@@ -55,7 +55,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .elegant-gradient {
-  background: linear-gradient(135deg, #87CEFA 0%, #E0F6FF 100%); /* Light sky blue to very light blue */
+  background: linear-gradient(135deg, #87CEFA 0%, #FFFFFF 100%); /* Light sky blue to white */
 }
 
 .elegant-card {
