@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,31 +62,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom light sky blue color palette
-				skyblue: {
-					light: '#87CEFA',
-					primary: '#3498DB',
-					secondary: '#E0F6FF'
-				},
-				lightblue: {
-					50: '#F8FCFF',
-					100: '#ECF8FF',
-					200: '#E0F6FF',
-					300: '#B3E5FC',
-					400: '#81D4FA',
-					500: '#4FC3F7',
-					600: '#29B6F6',
-					700: '#03A9F4',
-					800: '#0288D1',
-					900: '#0277BD'
-				},
-				// Keep elegant colors for backward compatibility - updated to sky blue scheme
 				elegant: {
-					darkpurple: '#3498DB', // Updated to Sky blue
-					purple: '#3498DB', // Updated to Sky blue
-					lightpurple: '#87CEFA', // Updated to Light sky blue
-					gold: '#FFFFFF', // Updated to White
-					cream: '#F8FCFF' // Updated to Very light sky blue
+					darkpurple: '#3F2E56',
+					purple: '#6E59A5',
+					lightpurple: '#9b87f5',
+					gold: '#E5B94B',
+					cream: '#F9F4E8'
 				}
 			},
 			fontFamily: {
