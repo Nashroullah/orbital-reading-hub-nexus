@@ -178,7 +178,7 @@ const LoginPage: React.FC = () => {
                         {error}
                       </div>
                     )}
-                    <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm font-montserrat">
+                    <div className="p-3 rounded-md bg-white text-blue-700 text-sm font-montserrat border border-blue-200">
                       <p>A 6-digit verification code will be sent to this phone number.</p>
                     </div>
                   </CardContent>

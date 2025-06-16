@@ -253,7 +253,7 @@ const RegisterPage: React.FC = () => {
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
                       <div className="flex items-center">
-                        <span className="bg-gray-100 border border-gray-300 px-3 py-2 rounded-l text-gray-700">+91</span>
+                        <span className="bg-white border border-gray-300 px-3 py-2 rounded-l text-gray-700">+91</span>
                         <Input 
                           id="phone" 
                           type="tel" 
@@ -297,7 +297,7 @@ const RegisterPage: React.FC = () => {
                         {error}
                       </div>
                     )}
-                    <div className="p-3 rounded-md bg-blue-50 text-blue-700 text-sm">
+                    <div className="p-3 rounded-md bg-white text-blue-700 text-sm border border-blue-200">
                       <p>A 6-digit verification code will be sent to this phone number.</p>
                     </div>
                   </CardContent>
