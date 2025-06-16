@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,12 +62,22 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Custom color palette
+				slate: {
+					blue: '#2C3E50'
+				},
+				turquoise: '#18BC9C',
+				cloud: {
+					gray: '#ECF0F1'
+				},
+				charcoal: '#2D3436',
+				// Keep elegant colors for backward compatibility
 				elegant: {
-					darkpurple: '#3F2E56',
-					purple: '#6E59A5',
-					lightpurple: '#9b87f5',
-					gold: '#E5B94B',
-					cream: '#F9F4E8'
+					darkpurple: '#2C3E50', // Updated to Slate Blue
+					purple: '#2C3E50', // Updated to Slate Blue
+					lightpurple: '#18BC9C', // Updated to Turquoise
+					gold: '#18BC9C', // Updated to Turquoise
+					cream: '#ECF0F1' // Updated to Cloud Gray
 				}
 			},
 			fontFamily: {
