@@ -62,25 +62,31 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom color palette for library theme
-				saddle: {
-					brown: '#8B4513'
+				// Custom light sky blue color palette
+				skyblue: {
+					light: '#87CEFA',
+					primary: '#3498DB',
+					secondary: '#E0F6FF'
 				},
-				peru: '#CD853F',
-				warm: {
-					white: '#FAFAFA',
-					beige: '#F5F5DC'
+				lightblue: {
+					50: '#F8FCFF',
+					100: '#ECF8FF',
+					200: '#E0F6FF',
+					300: '#B3E5FC',
+					400: '#81D4FA',
+					500: '#4FC3F7',
+					600: '#29B6F6',
+					700: '#03A9F4',
+					800: '#0288D1',
+					900: '#0277BD'
 				},
-				dark: {
-					gray: '#333333'
-				},
-				// Keep elegant colors for backward compatibility - updated to new scheme
+				// Keep elegant colors for backward compatibility - updated to sky blue scheme
 				elegant: {
-					darkpurple: '#8B4513', // Updated to Saddle Brown
-					purple: '#8B4513', // Updated to Saddle Brown
-					lightpurple: '#CD853F', // Updated to Peru
-					gold: '#CD853F', // Updated to Peru
-					cream: '#F5F5DC' // Updated to Beige
+					darkpurple: '#3498DB', // Updated to Sky blue
+					purple: '#3498DB', // Updated to Sky blue
+					lightpurple: '#87CEFA', // Updated to Light sky blue
+					gold: '#87CEFA', // Updated to Light sky blue
+					cream: '#F8FCFF' // Updated to Very light sky blue
 				}
 			},
 			fontFamily: {
