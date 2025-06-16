@@ -62,22 +62,25 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom color palette
-				slate: {
-					blue: '#2C3E50'
+				// Custom color palette for library theme
+				saddle: {
+					brown: '#8B4513'
 				},
-				turquoise: '#18BC9C',
-				cloud: {
-					gray: '#ECF0F1'
+				peru: '#CD853F',
+				warm: {
+					white: '#FAFAFA',
+					beige: '#F5F5DC'
 				},
-				charcoal: '#2D3436',
-				// Keep elegant colors for backward compatibility
+				dark: {
+					gray: '#333333'
+				},
+				// Keep elegant colors for backward compatibility - updated to new scheme
 				elegant: {
-					darkpurple: '#2C3E50', // Updated to Slate Blue
-					purple: '#2C3E50', // Updated to Slate Blue
-					lightpurple: '#18BC9C', // Updated to Turquoise
-					gold: '#18BC9C', // Updated to Turquoise
-					cream: '#ECF0F1' // Updated to Cloud Gray
+					darkpurple: '#8B4513', // Updated to Saddle Brown
+					purple: '#8B4513', // Updated to Saddle Brown
+					lightpurple: '#CD853F', // Updated to Peru
+					gold: '#CD853F', // Updated to Peru
+					cream: '#F5F5DC' // Updated to Beige
 				}
 			},
 			fontFamily: {

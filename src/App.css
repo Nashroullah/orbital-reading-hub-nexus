@@ -7,13 +7,13 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #ECF0F1; /* Cloud Gray */
-  color: #2D3436; /* Charcoal */
+  background-color: #FAFAFA; /* Warm White */
+  color: #333333; /* Dark Gray */
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
-  color: #2C3E50; /* Slate Blue */
+  color: #8B4513; /* Saddle Brown */
 }
 
 .logo {
@@ -24,11 +24,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .logo:hover {
-  filter: drop-shadow(0 0 2em #18BC9Caa); /* Turquoise glow */
+  filter: drop-shadow(0 0 2em #CD853Faa); /* Peru glow */
 }
 
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #18BC9Caa); /* Turquoise glow */
+  filter: drop-shadow(0 0 2em #CD853Faa); /* Peru glow */
 }
 
 @keyframes logo-spin {
@@ -55,21 +55,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .elegant-gradient {
-  background: linear-gradient(135deg, #2C3E50 0%, #18BC9C 100%); /* Slate Blue to Turquoise */
+  background: linear-gradient(135deg, #8B4513 0%, #CD853F 100%); /* Saddle Brown to Peru */
 }
 
 .elegant-card {
   background-color: white;
   border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(44, 62, 80, 0.1), 0 4px 6px -2px rgba(44, 62, 80, 0.05); /* Slate Blue shadow */
-  border: 1px solid rgba(24, 188, 156, 0.1); /* Turquoise border */
+  box-shadow: 0 10px 15px -3px rgba(139, 69, 19, 0.1), 0 4px 6px -2px rgba(139, 69, 19, 0.05); /* Saddle Brown shadow */
+  border: 1px solid rgba(205, 133, 63, 0.1); /* Peru border */
   transition: all 0.3s ease;
 }
 
 .elegant-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04); /* Slate Blue shadow */
-  border-color: rgba(24, 188, 156, 0.2); /* Turquoise border on hover */
+  box-shadow: 0 20px 25px -5px rgba(139, 69, 19, 0.1), 0 10px 10px -5px rgba(139, 69, 19, 0.04); /* Saddle Brown shadow */
+  border-color: rgba(205, 133, 63, 0.2); /* Peru border on hover */
 }
 
 /* Animations */
